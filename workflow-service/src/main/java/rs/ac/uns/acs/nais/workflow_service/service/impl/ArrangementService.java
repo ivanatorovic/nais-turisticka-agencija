@@ -3,9 +3,7 @@ package rs.ac.uns.acs.nais.workflow_service.service.impl;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import rs.ac.uns.acs.nais.workflow_service.dto.ArrangementDTO;
-import rs.ac.uns.acs.nais.workflow_service.dto.OfferDTO;
-import rs.ac.uns.acs.nais.workflow_service.dto.WorkflowDTO;
+import rs.ac.uns.acs.nais.workflow_service.dto.*;
 import rs.ac.uns.acs.nais.workflow_service.model.Arrangement;
 import rs.ac.uns.acs.nais.workflow_service.model.Offer;
 import rs.ac.uns.acs.nais.workflow_service.model.Workflow;
@@ -250,4 +248,28 @@ public class ArrangementService implements IArrangementService {
         arrangementRepository.removeOfferFromArrangement(arrangementId, offerId);
     }
 
+    @Override
+    public List<SameTransportArrangementDTO> findArrangementsWithSameTransportAsAdminArrangements(Long adminId) {
+        return arrangementRepository.findArrangementsWithSameTransportAsAdminArrangements(adminId);
+    }
+
+    @Override
+    public List<OfferAverageRatingDTO> getOfferAverageRatings() {
+        return arrangementRepository.getOfferAverageRatings();
+    }
+
+    @Override
+    public List<AdminWorkflowArrangementCountDTO> getArrangementCountByAdminWorkflow() {
+        return arrangementRepository.getArrangementCountByAdminWorkflow();
+    }
+
+    @Override
+    public List<HotelFacilitiesDTO> getHotelsWithFacilities() {
+        return arrangementRepository.getHotelsWithFacilities();
+    }
+
+    @Override
+    public List<BetterAccommodationOfferDTO> findBetterAccommodationOffers(Long adminId) {
+        return arrangementRepository.findBetterAccommodationOffers(adminId);
+    }
 }

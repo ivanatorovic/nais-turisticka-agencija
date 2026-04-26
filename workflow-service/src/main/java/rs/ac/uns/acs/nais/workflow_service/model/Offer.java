@@ -2,6 +2,7 @@ package rs.ac.uns.acs.nais.workflow_service.model;
 
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Relationship;
 
 @Node("Offer")
 public class Offer {
@@ -13,6 +14,12 @@ public class Offer {
     private String endDate;
     private Double priceForChildren;
     private Double priceForAdults;
+
+    @Relationship(type = "HAS_ACCOMMODATION", direction = Relationship.Direction.OUTGOING)
+    private Accommodation accommodation;
+
+    @Relationship(type = "HAS_TRANSPORT", direction = Relationship.Direction.OUTGOING)
+    private Transport transport;
 
     public Offer() {
     }
@@ -64,4 +71,21 @@ public class Offer {
     public void setPriceForAdults(Double priceForAdults) {
         this.priceForAdults = priceForAdults;
     }
+
+    public Accommodation getAccommodation() {
+        return accommodation;
+    }
+
+    public void setAccommodation(Accommodation accommodation) {
+        this.accommodation = accommodation;
+    }
+
+    public Transport getTransport() {
+        return transport;
+    }
+
+    public void setTransport(Transport transport) {
+        this.transport = transport;
+    }
+
 }

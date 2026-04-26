@@ -3,7 +3,9 @@ package rs.ac.uns.acs.nais.workflow_service.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.uns.acs.nais.workflow_service.dto.AccommodationDTO;
 import rs.ac.uns.acs.nais.workflow_service.dto.OfferDTO;
+import rs.ac.uns.acs.nais.workflow_service.dto.TransportDTO;
 import rs.ac.uns.acs.nais.workflow_service.service.IOfferService;
 
 import java.util.List;
@@ -43,6 +45,50 @@ public class OfferController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOffer(@PathVariable Long id) {
         offerService.deleteOffer(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{offerId}/accommodation/{accommodationId}")
+    public ResponseEntity<OfferDTO> setAccommodation(@PathVariable Long offerId,
+                                                     @PathVariable Long accommodationId) {
+        return ResponseEntity.ok(offerService.setAccommodation(offerId, accommodationId));
+    }
+
+    @GetMapping("/{offerId}/accommodation")
+    public ResponseEntity<AccommodationDTO> getAccommodation(@PathVariable Long offerId) {
+        return ResponseEntity.ok(offerService.getAccommodation(offerId));
+    }
+
+    @GetMapping("/accommodation/{accommodationId}")
+    public ResponseEntity<List<OfferDTO>> getOffersByAccommodation(@PathVariable Long accommodationId) {
+        return ResponseEntity.ok(offerService.getOffersByAccommodation(accommodationId));
+    }
+
+    @DeleteMapping("/{offerId}/accommodation")
+    public ResponseEntity<Void> removeAccommodation(@PathVariable Long offerId) {
+        offerService.removeAccommodation(offerId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{offerId}/transport/{transportId}")
+    public ResponseEntity<OfferDTO> setTransport(@PathVariable Long offerId,
+                                                 @PathVariable Long transportId) {
+        return ResponseEntity.ok(offerService.setTransport(offerId, transportId));
+    }
+
+    @GetMapping("/{offerId}/transport")
+    public ResponseEntity<TransportDTO> getTransport(@PathVariable Long offerId) {
+        return ResponseEntity.ok(offerService.getTransport(offerId));
+    }
+
+    @GetMapping("/transport/{transportId}")
+    public ResponseEntity<List<OfferDTO>> getOffersByTransport(@PathVariable Long transportId) {
+        return ResponseEntity.ok(offerService.getOffersByTransport(transportId));
+    }
+
+    @DeleteMapping("/{offerId}/transport")
+    public ResponseEntity<Void> removeTransport(@PathVariable Long offerId) {
+        offerService.removeTransport(offerId);
         return ResponseEntity.noContent().build();
     }
 }

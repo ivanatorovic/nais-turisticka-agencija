@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.acs.nais.workflow_service.dto.AccommodationDTO;
+import rs.ac.uns.acs.nais.workflow_service.dto.FacilityDTO;
 import rs.ac.uns.acs.nais.workflow_service.service.IAccommodationService;
 
 import java.util.List;
@@ -43,6 +44,29 @@ public class AccommodationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAccommodation(@PathVariable Long id) {
         accommodationService.deleteAccommodation(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{accommodationId}/facilities/{facilityId}")
+    public ResponseEntity<AccommodationDTO> addFacilityToHotel(@PathVariable Long accommodationId,
+                                                               @PathVariable Long facilityId) {
+        return ResponseEntity.ok(accommodationService.addFacilityToHotel(accommodationId, facilityId));
+    }
+
+    @GetMapping("/{accommodationId}/facilities")
+    public ResponseEntity<List<FacilityDTO>> getFacilitiesForAccommodation(@PathVariable Long accommodationId) {
+        return ResponseEntity.ok(accommodationService.getFacilitiesForAccommodation(accommodationId));
+    }
+
+    @GetMapping("/facilities/{facilityId}")
+    public ResponseEntity<List<AccommodationDTO>> getAccommodationsByFacility(@PathVariable Long facilityId) {
+        return ResponseEntity.ok(accommodationService.getAccommodationsByFacility(facilityId));
+    }
+
+    @DeleteMapping("/{accommodationId}/facilities/{facilityId}")
+    public ResponseEntity<Void> removeFacilityFromAccommodation(@PathVariable Long accommodationId,
+                                                                @PathVariable Long facilityId) {
+        accommodationService.removeFacilityFromAccommodation(accommodationId, facilityId);
         return ResponseEntity.noContent().build();
     }
 }
