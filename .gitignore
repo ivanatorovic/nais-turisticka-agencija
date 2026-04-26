@@ -1,0 +1,17 @@
+.idea/
+**/.idea/
+
+target/
+**/target/
+
+.git/
+**/.git/
+
+data/
+workflow-data/
+neo4j-data/
+postgres-data/
+pgadmin-data/
+
+.env
+*.log
