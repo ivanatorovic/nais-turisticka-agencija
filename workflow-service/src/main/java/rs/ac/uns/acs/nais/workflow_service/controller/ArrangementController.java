@@ -3,9 +3,7 @@ package rs.ac.uns.acs.nais.workflow_service.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import rs.ac.uns.acs.nais.workflow_service.dto.ArrangementDTO;
-import rs.ac.uns.acs.nais.workflow_service.dto.OfferDTO;
-import rs.ac.uns.acs.nais.workflow_service.dto.WorkflowDTO;
+import rs.ac.uns.acs.nais.workflow_service.dto.*;
 import rs.ac.uns.acs.nais.workflow_service.service.IArrangementService;
 
 import java.util.List;
@@ -91,5 +89,32 @@ public class ArrangementController {
                                             @PathVariable Long offerId) {
         arrangementService.removeOfferFromArrangement(arrangementId, offerId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/same-transport/admin/{adminId}")
+    public List<SameTransportArrangementDTO> findArrangementsWithSameTransportAsAdminArrangements(
+            @PathVariable Long adminId
+    ) {
+        return arrangementService.findArrangementsWithSameTransportAsAdminArrangements(adminId);
+    }
+
+    @GetMapping("/offer-average-ratings")
+    public List<OfferAverageRatingDTO> getOfferAverageRatings() {
+        return arrangementService.getOfferAverageRatings();
+    }
+
+    @GetMapping("/admin-workflow-arrangement-count")
+    public List<AdminWorkflowArrangementCountDTO> getArrangementCountByAdminWorkflow() {
+        return arrangementService.getArrangementCountByAdminWorkflow();
+    }
+
+    @GetMapping("/hotels/facilities")
+    public List<HotelFacilitiesDTO> getHotelsWithFacilities() {
+        return arrangementService.getHotelsWithFacilities();
+    }
+
+    @GetMapping("/better-accommodation-offers/admin/{adminId}")
+    public List<BetterAccommodationOfferDTO> findBetterAccommodationOffers(@PathVariable Long adminId) {
+        return arrangementService.findBetterAccommodationOffers(adminId);
     }
 }

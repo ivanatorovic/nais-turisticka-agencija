@@ -2,9 +2,15 @@ package rs.ac.uns.acs.nais.workflow_service.model;
 
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Relationship;
+
+import java.util.List;
 
 @Node("Accommodation")
 public class Accommodation {
+
+    @Relationship(type = "HAS_FACILITY", direction = Relationship.Direction.OUTGOING)
+    private List<Facility> facilities;
 
     @Id
     private Long id;
@@ -53,5 +59,13 @@ public class Accommodation {
 
     public void setRating(Double rating) {
         this.rating = rating;
+    }
+
+    public List<Facility> getFacilities() {
+        return facilities;
+    }
+
+    public void setFacilities(List<Facility> facilities) {
+        this.facilities = facilities;
     }
 }

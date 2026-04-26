@@ -1,8 +1,6 @@
 package rs.ac.uns.acs.nais.workflow_service.service;
 
-import rs.ac.uns.acs.nais.workflow_service.dto.ArrangementDTO;
-import rs.ac.uns.acs.nais.workflow_service.dto.OfferDTO;
-import rs.ac.uns.acs.nais.workflow_service.dto.WorkflowDTO;
+import rs.ac.uns.acs.nais.workflow_service.dto.*;
 
 import java.util.List;
 
@@ -33,4 +31,14 @@ public interface IArrangementService {
     ArrangementDTO getArrangementForOffer(Long offerId);
 
     void removeOfferFromArrangement(Long arrangementId, Long offerId);
+
+    List<SameTransportArrangementDTO> findArrangementsWithSameTransportAsAdminArrangements(Long adminId);
+
+    List<OfferAverageRatingDTO> getOfferAverageRatings();
+
+    List<AdminWorkflowArrangementCountDTO> getArrangementCountByAdminWorkflow();
+
+    List<HotelFacilitiesDTO> getHotelsWithFacilities();
+
+    List<BetterAccommodationOfferDTO> findBetterAccommodationOffers(Long adminId);
 }

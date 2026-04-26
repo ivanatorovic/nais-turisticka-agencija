@@ -2,6 +2,8 @@ package rs.ac.uns.acs.nais.workflow_service.repository;
 
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
+import org.springframework.data.repository.query.Param;
+import rs.ac.uns.acs.nais.workflow_service.dto.*;
 import rs.ac.uns.acs.nais.workflow_service.model.Arrangement;
 import rs.ac.uns.acs.nais.workflow_service.model.Offer;
 import rs.ac.uns.acs.nais.workflow_service.model.Workflow;
@@ -67,4 +69,111 @@ public interface ArrangementRepository extends Neo4jRepository<Arrangement, Long
     """)
     void removeOfferFromArrangement(Long arrangementId, Long offerId);
 
+    @Query("""
+    MATCH (admin:User)-[:CREATES]->(w:Workflow)<-[:BASED_ON]-(a1:Arrangement)
+          -[:HAS_OFFER]->(o1:Offer)-[:HAS_TRANSPORT]->(t:Transport)
+    WHERE admin.id = $adminId
+      AND admin.role = "ADMINISTRATOR"
+
+    WITH admin, a1, t
+
+    MATCH (a2:Arrangement)-[:HAS_OFFER]->(o2:Offer)-[:HAS_TRANSPORT]->(t)
+    WHERE a2.id <> a1.id
+
+    WITH admin, a1, t, collect(DISTINCT a2.name) AS arrangementsWithSameTransport
+
+    WHERE size(arrangementsWithSameTransport) > 0
+
+    RETURN admin.firstName + " " + admin.lastName AS administrator,
+           a1.name AS adminArrangement,
+           t.company AS transportCompany,
+           toString(t.type) AS transportType,
+           arrangementsWithSameTransport AS arrangementsWithSameTransport,
+           size(arrangementsWithSameTransport) AS numberOfArrangements
+    ORDER BY numberOfArrangements DESC
+    """)
+    List<SameTransportArrangementDTO> findArrangementsWithSameTransportAsAdminArrangements(@Param("adminId") Long adminId);
+
+    @Query("""
+    MATCH (a:Arrangement)-[:HAS_OFFER]->(o:Offer)
+    OPTIONAL MATCH (o)-[:HAS_ACCOMMODATION]->(acc:Accommodation)
+    OPTIONAL MATCH (o)-[:HAS_TRANSPORT]->(t:Transport)
+    WHERE acc.rating IS NOT NULL OR t.rating IS NOT NULL
+
+    WITH a, o,
+         CASE
+             WHEN acc.rating IS NOT NULL AND t.rating IS NOT NULL
+             THEN (toFloat(acc.rating) + toFloat(t.rating)) / 2.0
+             WHEN acc.rating IS NOT NULL
+             THEN toFloat(acc.rating)
+             ELSE toFloat(t.rating)
+         END AS averageRating,
+         CASE
+             WHEN acc.rating IS NOT NULL AND t.rating IS NOT NULL THEN 2
+             ELSE 1
+         END AS numberOfRatings
+
+    RETURN a.id AS arrangementId,
+           a.name AS arrangement,
+           o.id AS offerId,
+           round(averageRating * 100) / 100.0 AS averageRating,
+           numberOfRatings AS numberOfRatings
+    ORDER BY arrangement, offerId
+    """)
+    List<OfferAverageRatingDTO> getOfferAverageRatings();
+
+    @Query("""
+    MATCH (admin:User)-[:CREATES]->(w:Workflow)<-[:BASED_ON]-(a:Arrangement)
+    WHERE admin.role = "ADMINISTRATOR"
+    WITH admin, w, count(DISTINCT a) AS numberOfArrangements
+    WHERE numberOfArrangements > 0
+    RETURN admin.id AS adminId,
+           admin.firstName + " " + admin.lastName AS administrator,
+           w.id AS workflowId,
+           w.name AS workflowName,
+           numberOfArrangements AS numberOfArrangements
+    ORDER BY numberOfArrangements DESC
+    """)
+    List<AdminWorkflowArrangementCountDTO> getArrangementCountByAdminWorkflow();
+
+    @Query("""
+    MATCH (acc:Accommodation)-[:HAS_FACILITY]->(f:Facility)
+    WHERE acc.type = "HOTEL"
+
+    WITH acc, count(f) AS numberOfFacilities, collect(f.name) AS facilities
+
+    RETURN acc.id AS accommodationId,
+           acc.name AS hotel,
+           acc.rating AS rating,
+           numberOfFacilities,
+           facilities
+    ORDER BY numberOfFacilities DESC, rating DESC
+    """)
+    List<HotelFacilitiesDTO> getHotelsWithFacilities();
+
+    @Query("""
+    MATCH (admin:User)-[:CREATES]->(w:Workflow)<-[:BASED_ON]-(a:Arrangement)
+          -[:HAS_OFFER]->(o1:Offer)-[:HAS_ACCOMMODATION]->(acc1:Accommodation)
+    WHERE admin.id = $adminId
+      AND admin.role = "ADMINISTRATOR"
+      AND acc1.rating IS NOT NULL
+
+    WITH admin, a, o1, acc1
+
+    MATCH (a)-[:HAS_OFFER]->(o2:Offer)-[:HAS_ACCOMMODATION]->(acc2:Accommodation)
+    WHERE o2.id <> o1.id
+      AND acc2.type = acc1.type
+      AND acc2.rating > acc1.rating
+
+    RETURN admin.firstName + " " + admin.lastName AS administrator,
+           a.name AS arrangement,
+           o1.id AS originalOfferId,
+           acc1.name AS originalAccommodation,
+           acc1.rating AS originalRating,
+           o2.id AS betterOfferId,
+           acc2.name AS betterAccommodation,
+           acc2.rating AS betterRating
+    ORDER BY arrangement, originalOfferId, betterRating DESC
+    """)
+    List<BetterAccommodationOfferDTO> findBetterAccommodationOffers(@Param("adminId") Long adminId);
 }
