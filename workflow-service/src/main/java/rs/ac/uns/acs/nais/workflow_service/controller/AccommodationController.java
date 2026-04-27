@@ -58,11 +58,6 @@ public class AccommodationController {
         return ResponseEntity.ok(accommodationService.getFacilitiesForAccommodation(accommodationId));
     }
 
-    @GetMapping("/facilities/{facilityId}")
-    public ResponseEntity<List<AccommodationDTO>> getAccommodationsByFacility(@PathVariable Long facilityId) {
-        return ResponseEntity.ok(accommodationService.getAccommodationsByFacility(facilityId));
-    }
-
     @DeleteMapping("/{accommodationId}/facilities/{facilityId}")
     public ResponseEntity<Void> removeFacilityFromAccommodation(@PathVariable Long accommodationId,
                                                                 @PathVariable Long facilityId) {

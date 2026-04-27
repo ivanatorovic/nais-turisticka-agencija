@@ -160,14 +160,6 @@ public class OfferService implements IOfferService {
         return accommodation;
     }
 
-    @Override
-    public List<OfferDTO> getOffersByAccommodation(Long accommodationId) {
-
-        return offerRepository.getOffersForAccommodation(accommodationId)
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public void removeAccommodation(Long offerId) {
@@ -221,21 +213,6 @@ public class OfferService implements IOfferService {
         return transport;
     }
 
-
-    @Override
-    public List<OfferDTO> getOffersByTransport(Long transportId) {
-        if (!transportRepository.existsById(transportId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Transport not found with id: " + transportId
-            );
-        }
-
-        return offerRepository.getOffersForTransport(transportId)
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public void removeTransport(Long offerId) {

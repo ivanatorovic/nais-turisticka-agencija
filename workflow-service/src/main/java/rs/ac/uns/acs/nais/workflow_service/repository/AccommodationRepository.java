@@ -28,11 +28,6 @@ public interface AccommodationRepository extends Neo4jRepository<Accommodation, 
     """)
     List<FacilityDTO> getFacilitiesForAccommodation(Long accommodationId);
 
-    @Query("""
-    MATCH (f:Facility {id: $facilityId})<-[:HAS_FACILITY]-(a:Accommodation)
-    RETURN a
-    """)
-    List<Accommodation> getAccommodationsByFacility(Long facilityId);
 
     @Query("""
     MATCH (a:Accommodation {id: $accommodationId})-[r:HAS_FACILITY]->(f:Facility {id: $facilityId})

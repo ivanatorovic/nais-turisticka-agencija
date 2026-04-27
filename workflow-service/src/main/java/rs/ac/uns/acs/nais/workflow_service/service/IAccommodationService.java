@@ -21,7 +21,5 @@ public interface IAccommodationService {
 
     List<FacilityDTO> getFacilitiesForAccommodation(Long accommodationId);
 
-    List<AccommodationDTO> getAccommodationsByFacility(Long facilityId);
-
     void removeFacilityFromAccommodation(Long accommodationId, Long facilityId);
 }
