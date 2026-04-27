@@ -62,25 +62,25 @@ public interface ArrangementRepository extends Neo4jRepository<Arrangement, Long
     Arrangement getArrangementWithDestination(@Param("arrangementId") Long arrangementId);
 
     @Query("""
-    MATCH (a:Arrangement {id: $id})
-    DETACH DELETE a
-""")
+        MATCH (a:Arrangement {id: $id})
+        DETACH DELETE a
+    """)
     void deleteArrangementById(@Param("id") Long id);
 
     @Query("""
-    MATCH (a1:Arrangement {id: $arrangementId})-[:HAS_TAG]->(t:Tag)
-    MATCH (a2:Arrangement)-[:HAS_TAG]->(t)
-    MATCH (a1)-[:LOCATED_IN]->(d:Destination)
-    MATCH (a2)-[:LOCATED_IN]->(d)
-    WHERE a1 <> a2
-    WITH a2, COUNT(t) AS similarity
-    RETURN a2.id AS id,
-           a2.name AS name,
-           a2.description AS description,
-           a2.price AS price,
-           a2.durationDays AS durationDays
-    ORDER BY similarity DESC
-    LIMIT 3
-""")
+        MATCH (a1:Arrangement {id: $arrangementId})-[:HAS_TAG]->(t:Tag)
+        MATCH (a2:Arrangement)-[:HAS_TAG]->(t)
+        MATCH (a1)-[:LOCATED_IN]->(d:Destination)
+        MATCH (a2)-[:LOCATED_IN]->(d)
+        WHERE a1 <> a2
+        WITH a2, COUNT(t) AS similarity
+        RETURN a2.id AS id,
+               a2.name AS name,
+               a2.description AS description,
+               a2.price AS price,
+               a2.durationDays AS durationDays
+        ORDER BY similarity DESC
+        LIMIT 3
+    """)
     List<ArrangementRecommendationDto> findSimilarArrangements(@Param("arrangementId") Long arrangementId);
 }
