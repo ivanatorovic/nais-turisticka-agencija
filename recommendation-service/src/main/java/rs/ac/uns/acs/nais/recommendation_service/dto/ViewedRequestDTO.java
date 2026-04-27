@@ -4,16 +4,16 @@ public class ViewedRequestDTO {
 
     private Long userId;
     private Long arrangementId;
-    private String viewedAt;
+
 
 
     public ViewedRequestDTO() {
     }
 
-    public ViewedRequestDTO(Long userId, Long arrangementId, String viewedAt) {
+    public ViewedRequestDTO(Long userId, Long arrangementId) {
         this.userId = userId;
         this.arrangementId = arrangementId;
-        this.viewedAt = viewedAt;
+
 
     }
 
@@ -25,9 +25,7 @@ public class ViewedRequestDTO {
         return arrangementId;
     }
 
-    public String getViewedAt() {
-        return viewedAt;
-    }
+
 
 
 
@@ -39,9 +37,7 @@ public class ViewedRequestDTO {
         this.arrangementId = arrangementId;
     }
 
-    public void setViewedAt(String viewedAt) {
-        this.viewedAt = viewedAt;
-    }
+
 
 
 }

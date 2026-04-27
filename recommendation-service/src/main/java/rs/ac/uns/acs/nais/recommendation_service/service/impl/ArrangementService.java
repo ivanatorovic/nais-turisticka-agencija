@@ -40,7 +40,7 @@ public class ArrangementService implements IArrangementService {
         return arrangementRepository.save(arrangement);
     }
 
-    // ===================== READ =====================
+
     @Override
     public List<Arrangement> findAll() {
         return arrangementRepository.findAll();
