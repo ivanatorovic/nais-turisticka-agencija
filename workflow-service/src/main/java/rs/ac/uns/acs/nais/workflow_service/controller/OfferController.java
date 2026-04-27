@@ -59,11 +59,6 @@ public class OfferController {
         return ResponseEntity.ok(offerService.getAccommodation(offerId));
     }
 
-    @GetMapping("/accommodation/{accommodationId}")
-    public ResponseEntity<List<OfferDTO>> getOffersByAccommodation(@PathVariable Long accommodationId) {
-        return ResponseEntity.ok(offerService.getOffersByAccommodation(accommodationId));
-    }
-
     @DeleteMapping("/{offerId}/accommodation")
     public ResponseEntity<Void> removeAccommodation(@PathVariable Long offerId) {
         offerService.removeAccommodation(offerId);
@@ -79,11 +74,6 @@ public class OfferController {
     @GetMapping("/{offerId}/transport")
     public ResponseEntity<TransportDTO> getTransport(@PathVariable Long offerId) {
         return ResponseEntity.ok(offerService.getTransport(offerId));
-    }
-
-    @GetMapping("/transport/{transportId}")
-    public ResponseEntity<List<OfferDTO>> getOffersByTransport(@PathVariable Long transportId) {
-        return ResponseEntity.ok(offerService.getOffersByTransport(transportId));
     }
 
     @DeleteMapping("/{offerId}/transport")

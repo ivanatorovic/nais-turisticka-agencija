@@ -22,15 +22,11 @@ public interface IOfferService {
 
     AccommodationDTO getAccommodation(Long offerId);
 
-    List<OfferDTO> getOffersByAccommodation(Long accommodationId);
-
     void removeAccommodation(Long offerId);
 
     OfferDTO setTransport(Long offerId, Long transportId);
 
     TransportDTO getTransport(Long offerId);
-
-    List<OfferDTO> getOffersByTransport(Long transportId);
 
     void removeTransport(Long offerId);
 }

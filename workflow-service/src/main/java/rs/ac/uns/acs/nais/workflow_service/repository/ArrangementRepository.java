@@ -33,12 +33,6 @@ public interface ArrangementRepository extends Neo4jRepository<Arrangement, Long
     WorkflowDTO getWorkflowForArrangement(Long arrangementId);
 
     @Query("""
-    MATCH (w:Workflow {id: $workflowId})<-[:BASED_ON]-(a:Arrangement)
-    RETURN a
-    """)
-    List<Arrangement> getArrangementsByWorkflow(Long workflowId);
-
-    @Query("""
     MATCH (a:Arrangement {id: $arrangementId})-[r:BASED_ON]->(:Workflow)
     DELETE r
     """)
@@ -64,33 +58,12 @@ public interface ArrangementRepository extends Neo4jRepository<Arrangement, Long
     List<OfferDTO> getOffersForArrangement(Long arrangementId);
 
     @Query("""
-    MATCH (o:Offer {id: $offerId})<-[:HAS_OFFER]-(a:Arrangement)
-    RETURN a
-    """)
-    Arrangement getArrangementForOffer(Long offerId);
-
-    @Query("""
     MATCH (a:Arrangement {id: $arrangementId})-[r:HAS_OFFER]->(o:Offer {id: $offerId})
     DELETE r
     """)
     void removeOfferFromArrangement(Long arrangementId, Long offerId);
 
-    @Query("""
-    MATCH (acc:Accommodation)-[:HAS_FACILITY]->(f:Facility)
-    WHERE acc.type = "HOTEL"
-    
-    WITH acc,
-         count(DISTINCT f) AS numberOfFacilities,
-         collect(DISTINCT f.name) AS facilities
-    
-    RETURN acc.id AS accommodationId,
-           acc.name AS hotel,
-           acc.rating AS rating,
-           numberOfFacilities AS numberOfFacilities,
-           facilities AS facilities
-    ORDER BY numberOfFacilities DESC, rating DESC
-    """)
-    List<HotelFacilitiesDTO> getHotelsWithFacilities();
+
 
     @Query("""
     MATCH (admin:User)-[:CREATES]->(w:Workflow)<-[:BASED_ON]-(a1:Arrangement)

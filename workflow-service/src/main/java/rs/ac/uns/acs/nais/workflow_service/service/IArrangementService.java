@@ -20,15 +20,11 @@ public interface IArrangementService {
 
     WorkflowDTO getWorkflowForArrangement(Long arrangementId);
 
-    List<ArrangementDTO> getArrangementsByWorkflow(Long workflowId);
-
     void deleteBasedOnRelationship(Long arrangementId);
 
     ArrangementDTO addOfferToArrangement(Long arrangementId, Long offerId);
 
     List<OfferDTO> getOffersForArrangement(Long arrangementId);
-
-    ArrangementDTO getArrangementForOffer(Long offerId);
 
     void removeOfferFromArrangement(Long arrangementId, Long offerId);
 

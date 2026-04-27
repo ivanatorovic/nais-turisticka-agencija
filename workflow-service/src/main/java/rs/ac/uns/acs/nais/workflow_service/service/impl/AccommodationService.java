@@ -166,20 +166,7 @@ public class AccommodationService implements IAccommodationService {
         return accommodationRepository.getFacilitiesForAccommodation(accommodationId);
     }
 
-    @Override
-    public List<AccommodationDTO> getAccommodationsByFacility(Long facilityId) {
-        if (!facilityRepository.existsById(facilityId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Facility not found with id: " + facilityId
-            );
-        }
 
-        return accommodationRepository.getAccommodationsByFacility(facilityId)
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public void removeFacilityFromAccommodation(Long accommodationId, Long facilityId) {

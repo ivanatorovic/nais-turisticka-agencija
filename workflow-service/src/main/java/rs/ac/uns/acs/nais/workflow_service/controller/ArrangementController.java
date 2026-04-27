@@ -66,11 +66,6 @@ public class ArrangementController {
         return ResponseEntity.ok(arrangementService.getWorkflowForArrangement(arrangementId));
     }
 
-    @GetMapping("/workflow/{workflowId}")
-    public ResponseEntity<List<ArrangementDTO>> getArrangementsByWorkflow(@PathVariable Long workflowId) {
-        return ResponseEntity.ok(arrangementService.getArrangementsByWorkflow(workflowId));
-    }
-
     @DeleteMapping("/{arrangementId}/based-on")
     public ResponseEntity<Void> deleteBasedOnRelationship(@PathVariable Long arrangementId) {
         arrangementService.deleteBasedOnRelationship(arrangementId);
@@ -88,10 +83,6 @@ public class ArrangementController {
         return ResponseEntity.ok(arrangementService.getOffersForArrangement(arrangementId));
     }
 
-    @GetMapping("/offers/{offerId}/arrangement")
-    public ResponseEntity<ArrangementDTO> getArrangement(@PathVariable Long offerId) {
-        return ResponseEntity.ok(arrangementService.getArrangementForOffer(offerId));
-    }
 
     @DeleteMapping("/{arrangementId}/offers/{offerId}")
     public ResponseEntity<Void> removeOffer(@PathVariable Long arrangementId,

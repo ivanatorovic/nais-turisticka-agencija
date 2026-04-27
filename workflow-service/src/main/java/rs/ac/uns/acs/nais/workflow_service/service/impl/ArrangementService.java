@@ -180,20 +180,6 @@ public class ArrangementService implements IArrangementService {
         return workflow;
     }
 
-    @Override
-    public List<ArrangementDTO> getArrangementsByWorkflow(Long workflowId) {
-        if (!workflowRepository.existsById(workflowId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Workflow not found with id: " + workflowId
-            );
-        }
-
-        return arrangementRepository.getArrangementsByWorkflow(workflowId)
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public void deleteBasedOnRelationship(Long arrangementId) {
@@ -249,19 +235,6 @@ public class ArrangementService implements IArrangementService {
         return arrangementRepository.getOffersForArrangement(arrangementId);
     }
 
-
-
-    @Override
-    public ArrangementDTO getArrangementForOffer(Long offerId) {
-
-        if (!offerRepository.existsById(offerId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Offer not found");
-        }
-
-        Arrangement a = arrangementRepository.getArrangementForOffer(offerId);
-
-        return mapToDTO(a);
-    }
 
     @Override
     public void removeOfferFromArrangement(Long arrangementId, Long offerId) {

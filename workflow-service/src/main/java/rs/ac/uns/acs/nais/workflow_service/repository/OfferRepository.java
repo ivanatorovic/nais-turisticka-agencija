@@ -34,12 +34,6 @@ public interface OfferRepository extends Neo4jRepository<Offer, Long> {
     AccommodationDTO getAccommodationForOffer(Long offerId);
 
     @Query("""
-    MATCH (a:Accommodation {id: $accommodationId})<-[:HAS_ACCOMMODATION]-(o:Offer)
-    RETURN o
-    """)
-    List<Offer> getOffersForAccommodation(Long accommodationId);
-
-    @Query("""
     MATCH (o:Offer {id: $offerId})-[r:HAS_ACCOMMODATION]->(:Accommodation)
     DELETE r
     """)
@@ -62,12 +56,6 @@ public interface OfferRepository extends Neo4jRepository<Offer, Long> {
            t.rating AS rating
     """)
     TransportDTO getTransportForOffer(Long offerId);
-
-    @Query("""
-    MATCH (t:Transport {id: $transportId})<-[:HAS_TRANSPORT]-(o:Offer)
-    RETURN o
-    """)
-    List<Offer> getOffersForTransport(Long transportId);
 
     @Query("""
     MATCH (o:Offer {id: $offerId})-[r:HAS_TRANSPORT]->(:Transport)
