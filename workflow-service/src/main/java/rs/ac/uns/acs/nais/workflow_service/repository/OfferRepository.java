@@ -2,6 +2,8 @@ package rs.ac.uns.acs.nais.workflow_service.repository;
 
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
+import rs.ac.uns.acs.nais.workflow_service.dto.AccommodationDTO;
+import rs.ac.uns.acs.nais.workflow_service.dto.TransportDTO;
 import rs.ac.uns.acs.nais.workflow_service.model.Accommodation;
 import rs.ac.uns.acs.nais.workflow_service.model.Offer;
 import rs.ac.uns.acs.nais.workflow_service.model.Transport;
@@ -24,9 +26,12 @@ public interface OfferRepository extends Neo4jRepository<Offer, Long> {
 
     @Query("""
     MATCH (o:Offer {id: $offerId})-[:HAS_ACCOMMODATION]->(a:Accommodation)
-    RETURN a
+    RETURN a.id AS id,
+           a.name AS name,
+           a.type AS type,
+           a.rating AS rating
     """)
-    Accommodation getAccommodationForOffer(Long offerId);
+    AccommodationDTO getAccommodationForOffer(Long offerId);
 
     @Query("""
     MATCH (a:Accommodation {id: $accommodationId})<-[:HAS_ACCOMMODATION]-(o:Offer)
@@ -51,9 +56,12 @@ public interface OfferRepository extends Neo4jRepository<Offer, Long> {
 
     @Query("""
     MATCH (o:Offer {id: $offerId})-[:HAS_TRANSPORT]->(t:Transport)
-    RETURN t
+    RETURN t.id AS id,
+           t.type AS type,
+           t.company AS company,
+           t.rating AS rating
     """)
-    Transport getTransportForOffer(Long offerId);
+    TransportDTO getTransportForOffer(Long offerId);
 
     @Query("""
     MATCH (t:Transport {id: $transportId})<-[:HAS_TRANSPORT]-(o:Offer)

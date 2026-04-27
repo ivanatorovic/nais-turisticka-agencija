@@ -2,7 +2,8 @@ package rs.ac.uns.acs.nais.workflow_service.model;
 
 import org.springframework.data.neo4j.core.schema.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
 
 @RelationshipProperties
 public class Creates {
@@ -10,7 +11,7 @@ public class Creates {
     @RelationshipId
     private Long id;
 
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @TargetNode
     private Workflow workflow;
@@ -18,7 +19,7 @@ public class Creates {
     public Creates() {
     }
 
-    public Creates(LocalDateTime createdAt, Workflow workflow) {
+    public Creates(LocalDate createdAt, Workflow workflow) {
         this.createdAt = createdAt;
         this.workflow = workflow;
     }
@@ -27,7 +28,7 @@ public class Creates {
         return id;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
 
@@ -39,7 +40,7 @@ public class Creates {
         this.id = id;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
     }
 

@@ -5,7 +5,7 @@ import org.springframework.data.neo4j.repository.query.Query;
 import rs.ac.uns.acs.nais.workflow_service.dto.CreatesDTO;
 import rs.ac.uns.acs.nais.workflow_service.model.Workflow;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface WorkflowRepository extends Neo4jRepository<Workflow, Long> {
@@ -31,7 +31,7 @@ public interface WorkflowRepository extends Neo4jRepository<Workflow, Long> {
            SET r.createdAt = $createdAt
            RETURN w
            """)
-    Workflow createCreatesRelationship(Long userId, Long workflowId, LocalDateTime createdAt);
+    Workflow createCreatesRelationship(Long userId, Long workflowId, LocalDate createdAt);
 
     @Query("""
            MATCH (:User {id: $userId})-[r:CREATES]->(:Workflow {id: $workflowId})
@@ -55,7 +55,7 @@ public interface WorkflowRepository extends Neo4jRepository<Workflow, Long> {
            MATCH (:User {id: $userId})-[r:CREATES]->(:Workflow {id: $workflowId})
            SET r.createdAt = $createdAt
            """)
-    void updateCreatesRelationship(Long userId, Long workflowId, LocalDateTime createdAt);
+    void updateCreatesRelationship(Long userId, Long workflowId, LocalDate createdAt);
 
     @Query("""
            MATCH (:User {id: $userId})-[r:CREATES]->(:Workflow {id: $workflowId})

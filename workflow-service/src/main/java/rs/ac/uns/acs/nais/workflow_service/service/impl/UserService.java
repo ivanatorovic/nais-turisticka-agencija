@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import rs.ac.uns.acs.nais.workflow_service.dto.UserDTO;
-import rs.ac.uns.acs.nais.workflow_service.model.Role;
 import rs.ac.uns.acs.nais.workflow_service.model.User;
 import rs.ac.uns.acs.nais.workflow_service.repository.UserRepository;
 import rs.ac.uns.acs.nais.workflow_service.service.IUserService;
@@ -75,9 +74,6 @@ public class UserService implements IUserService {
             existingUser.setLastName(userDTO.getLastName());
         }
 
-        if (userDTO.getRole() != null) {
-            existingUser.setRole(Role.valueOf(userDTO.getRole().toUpperCase()));
-        }
 
         User updatedUser = userRepository.save(existingUser);
         return mapToDTO(updatedUser);
@@ -102,10 +98,6 @@ public class UserService implements IUserService {
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
 
-        if (user.getRole() != null) {
-            dto.setRole(user.getRole().name());
-        }
-
         return dto;
     }
 
@@ -115,10 +107,6 @@ public class UserService implements IUserService {
         user.setId(dto.getId());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
-
-        if (dto.getRole() != null) {
-            user.setRole(Role.valueOf(dto.getRole().toUpperCase()));
-        }
 
         return user;
     }

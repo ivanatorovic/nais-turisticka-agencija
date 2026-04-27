@@ -4,7 +4,7 @@ import rs.ac.uns.acs.nais.workflow_service.dto.CreateWorkflowRequest;
 import rs.ac.uns.acs.nais.workflow_service.dto.CreatesDTO;
 import rs.ac.uns.acs.nais.workflow_service.dto.WorkflowDTO;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface IWorkflowService {
@@ -25,7 +25,7 @@ public interface IWorkflowService {
 
     CreatesDTO getCreatesRelationship(Long userId, Long workflowId);
 
-    CreatesDTO updateCreatesRelationship(Long userId, Long workflowId, LocalDateTime createdAt);
+    CreatesDTO updateCreatesRelationship(Long userId, Long workflowId, LocalDate createdAt);
 
     void deleteCreatesRelationship(Long userId, Long workflowId);
 

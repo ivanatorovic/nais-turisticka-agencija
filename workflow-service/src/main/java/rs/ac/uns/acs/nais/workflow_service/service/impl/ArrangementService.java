@@ -9,6 +9,7 @@ import rs.ac.uns.acs.nais.workflow_service.model.Offer;
 import rs.ac.uns.acs.nais.workflow_service.model.Workflow;
 import rs.ac.uns.acs.nais.workflow_service.repository.ArrangementRepository;
 import rs.ac.uns.acs.nais.workflow_service.repository.OfferRepository;
+import rs.ac.uns.acs.nais.workflow_service.repository.UserRepository;
 import rs.ac.uns.acs.nais.workflow_service.repository.WorkflowRepository;
 import rs.ac.uns.acs.nais.workflow_service.service.IArrangementService;
 
@@ -22,13 +23,16 @@ public class ArrangementService implements IArrangementService {
     private final ArrangementRepository arrangementRepository;
     private final WorkflowRepository workflowRepository;
     private final OfferRepository offerRepository;
+    private final UserRepository userRepository;
 
     public ArrangementService(ArrangementRepository arrangementRepository,
                               WorkflowRepository workflowRepository,
-                              OfferRepository offerRepository) {
+                              OfferRepository offerRepository,
+                              UserRepository userRepository) {
         this.arrangementRepository = arrangementRepository;
         this.workflowRepository = workflowRepository;
         this.offerRepository = offerRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -37,6 +41,19 @@ public class ArrangementService implements IArrangementService {
                 .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<HotelMealDTO> getAdminHotelsWithMealOptions(Long adminId) {
+
+        if (!userRepository.existsById(adminId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Administrator not found with id: " + adminId
+            );
+        }
+
+        return arrangementRepository.getAdminHotelsWithMealOptions(adminId);
     }
 
     @Override
@@ -80,9 +97,17 @@ public class ArrangementService implements IArrangementService {
             );
         }
 
-        existingArrangement.setName(arrangementDTO.getName());
-        existingArrangement.setDescription(arrangementDTO.getDescription());
-        existingArrangement.setDestination(arrangementDTO.getDestination());
+        if (arrangementDTO.getName() != null) {
+            existingArrangement.setName(arrangementDTO.getName());
+        }
+
+        if (arrangementDTO.getDescription() != null) {
+            existingArrangement.setDescription(arrangementDTO.getDescription());
+        }
+
+        if (arrangementDTO.getDestination() != null) {
+            existingArrangement.setDestination(arrangementDTO.getDestination());
+        }
 
         Arrangement updatedArrangement = arrangementRepository.save(existingArrangement);
 
@@ -143,7 +168,7 @@ public class ArrangementService implements IArrangementService {
             );
         }
 
-        Workflow workflow = arrangementRepository.getWorkflowForArrangement(arrangementId);
+        WorkflowDTO workflow = arrangementRepository.getWorkflowForArrangement(arrangementId);
 
         if (workflow == null) {
             throw new ResponseStatusException(
@@ -152,7 +177,7 @@ public class ArrangementService implements IArrangementService {
             );
         }
 
-        return mapWorkflowToDTO(workflow);
+        return workflow;
     }
 
     @Override
@@ -215,20 +240,16 @@ public class ArrangementService implements IArrangementService {
     public List<OfferDTO> getOffersForArrangement(Long arrangementId) {
 
         if (!arrangementRepository.existsById(arrangementId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Arrangement not found");
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Arrangement not found"
+            );
         }
 
-        return arrangementRepository.getOffersForArrangement(arrangementId)
-                .stream()
-                .map(o -> new OfferDTO(
-                        o.getId(),
-                        o.getStartDate(),
-                        o.getEndDate(),
-                        o.getPriceForChildren(),
-                        o.getPriceForAdults()
-                ))
-                .collect(Collectors.toList());
+        return arrangementRepository.getOffersForArrangement(arrangementId);
     }
+
+
 
     @Override
     public ArrangementDTO getArrangementForOffer(Long offerId) {
@@ -261,11 +282,6 @@ public class ArrangementService implements IArrangementService {
     @Override
     public List<AdminWorkflowArrangementCountDTO> getArrangementCountByAdminWorkflow() {
         return arrangementRepository.getArrangementCountByAdminWorkflow();
-    }
-
-    @Override
-    public List<HotelFacilitiesDTO> getHotelsWithFacilities() {
-        return arrangementRepository.getHotelsWithFacilities();
     }
 
     @Override

@@ -163,10 +163,7 @@ public class AccommodationService implements IAccommodationService {
             );
         }
 
-        return accommodationRepository.getFacilitiesForAccommodation(accommodationId)
-                .stream()
-                .map(this::mapFacilityToDTO)
-                .collect(Collectors.toList());
+        return accommodationRepository.getFacilitiesForAccommodation(accommodationId);
     }
 
     @Override

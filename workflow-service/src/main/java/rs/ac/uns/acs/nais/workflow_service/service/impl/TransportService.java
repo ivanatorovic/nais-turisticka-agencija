@@ -64,13 +64,31 @@ public class TransportService implements ITransportService {
                         "Transport not found"
                 ));
 
-        validate(dto);
+        if (dto.getId() != null && !dto.getId().equals(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Changing transport ID is not allowed"
+            );
+        }
+
+        if (dto.getRating() != null && (dto.getRating() < 1 || dto.getRating() > 5)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Rating must be between 1 and 5"
+            );
+        }
 
         if (dto.getType() != null) {
             existing.setType(dto.getType());
         }
 
         if (dto.getCompany() != null) {
+            if (dto.getCompany().isEmpty()) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Company cannot be empty"
+                );
+            }
             existing.setCompany(dto.getCompany());
         }
 

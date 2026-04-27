@@ -23,6 +23,15 @@ public class ArrangementController {
         return ResponseEntity.ok(arrangementService.getAllArrangements());
     }
 
+    @GetMapping("/admin/{adminId}/hotels/meal-options")
+    public ResponseEntity<List<HotelMealDTO>> getAdminHotelsWithMealOptions(
+            @PathVariable Long adminId) {
+
+        return ResponseEntity.ok(
+                arrangementService.getAdminHotelsWithMealOptions(adminId)
+        );
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ArrangementDTO> getArrangementById(@PathVariable Long id) {
         return ResponseEntity.ok(arrangementService.getArrangementById(id));
@@ -34,7 +43,7 @@ public class ArrangementController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdArrangement);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ArrangementDTO> updateArrangement(@PathVariable Long id,
                                                             @RequestBody ArrangementDTO arrangementDTO) {
         return ResponseEntity.ok(arrangementService.updateArrangement(id, arrangementDTO));
@@ -108,13 +117,10 @@ public class ArrangementController {
         return arrangementService.getArrangementCountByAdminWorkflow();
     }
 
-    @GetMapping("/hotels/facilities")
-    public List<HotelFacilitiesDTO> getHotelsWithFacilities() {
-        return arrangementService.getHotelsWithFacilities();
-    }
-
     @GetMapping("/better-accommodation-offers/admin/{adminId}")
     public List<BetterAccommodationOfferDTO> findBetterAccommodationOffers(@PathVariable Long adminId) {
         return arrangementService.findBetterAccommodationOffers(adminId);
     }
+
+
 }

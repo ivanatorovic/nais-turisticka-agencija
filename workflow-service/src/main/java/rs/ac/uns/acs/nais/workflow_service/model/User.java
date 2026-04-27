@@ -14,19 +14,16 @@ public class User {
 
     private String firstName;
     private String lastName;
-    private Role role;
 
-    @Relationship(type = "CREATES", direction = Relationship.Direction.OUTGOING)
-    private List<Creates> createdWorkflows;
 
     public User() {
     }
 
-    public User(Long id, String firstName, String lastName, Role role) {
+    public User(Long id, String firstName, String lastName) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.role = role;
+
     }
 
     public Long getId() {
@@ -41,10 +38,6 @@ public class User {
         return lastName;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -57,7 +50,5 @@ public class User {
         this.lastName = lastName;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
-    }
+
 }
