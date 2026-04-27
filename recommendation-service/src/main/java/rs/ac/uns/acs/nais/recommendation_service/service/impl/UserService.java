@@ -78,23 +78,16 @@ public class UserService implements IUserService {
         userRepository.deleteById(id);
     }
 
-    @Override
-    public User addOrUpdateViewed(Long userId, Long arrangementId, String viewedAt) {
+    public User addOrUpdateViewed(Long userId, Long arrangementId) {
         if (!userRepository.existsById(userId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "User not found with id: " + userId
-            );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + userId);
         }
 
         if (!arrangementRepository.existsById(arrangementId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Arrangement not found with id: " + arrangementId
-            );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Arrangement not found with id: " + arrangementId);
         }
 
-        return userRepository.addOrUpdateViewed(userId, arrangementId, viewedAt);
+        return userRepository.addOrUpdateViewed(userId, arrangementId);
     }
 
     @Override
@@ -128,23 +121,16 @@ public class UserService implements IUserService {
         return userRepository.findUserWithViewedRelationships(userId);
     }
 
-    @Override
-    public User addOrUpdateBooked(Long userId, Long arrangementId, String bookingDate, Integer persons, Double totalPrice) {
+    public User addOrUpdateBooked(Long userId, Long arrangementId, Integer persons, Double totalPrice) {
         if (!userRepository.existsById(userId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "User not found with id: " + userId
-            );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + userId);
         }
 
         if (!arrangementRepository.existsById(arrangementId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Arrangement not found with id: " + arrangementId
-            );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Arrangement not found with id: " + arrangementId);
         }
 
-        return userRepository.addOrUpdateBooked(userId, arrangementId, bookingDate, persons, totalPrice);
+        return userRepository.addOrUpdateBooked(userId, arrangementId, persons, totalPrice);
     }
 
     @Override

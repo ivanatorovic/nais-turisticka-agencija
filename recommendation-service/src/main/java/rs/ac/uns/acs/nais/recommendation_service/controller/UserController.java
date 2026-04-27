@@ -61,8 +61,7 @@ public class UserController {
     public ResponseEntity<Void> addOrUpdateViewed(@RequestBody ViewedRequestDTO dto) {
         userService.addOrUpdateViewed(
                 dto.getUserId(),
-                dto.getArrangementId(),
-                dto.getViewedAt()
+                dto.getArrangementId()
         );
 
         return ResponseEntity.ok().build();
@@ -84,7 +83,6 @@ public class UserController {
         userService.addOrUpdateBooked(
                 dto.getUserId(),
                 dto.getArrangementId(),
-                dto.getBookingDate(),
                 dto.getPersons(),
                 dto.getTotalPrice()
         );

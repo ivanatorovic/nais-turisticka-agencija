@@ -16,11 +16,11 @@ public interface IUserService {
     User update(Long id, UserUpdateRequest user);
     void delete(Long id);
 
-    User addOrUpdateViewed(Long userId, Long arrangementId, String viewedAt);
+    User addOrUpdateViewed(Long userId, Long arrangementId);
     void deleteViewedRelationship(Long userId, Long arrangementId);
     List<ViewedArrangementResponse> findUserWithViewedRelationships(Long userId);
 
-    User addOrUpdateBooked(Long userId, Long arrangementId, String bookingDate, Integer persons, Double totalPrice);
+    User addOrUpdateBooked(Long userId, Long arrangementId, Integer persons, Double totalPrice);
     void deleteBookedRelationship(Long userId, Long arrangementId);
     List<BookedArrangementResponse> findUserWithBookedRelationships(Long userId);
 
