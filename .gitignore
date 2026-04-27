@@ -1,17 +1,30 @@
 .idea/
-**/.idea/
 
-target/
-**/target/
-
+.vscode/
 .git/
-**/.git/
+/.git/
+target/
+/target/
+
+pycache**/
+*.pyc
+*.pyo
+*.pyd
+venv/
+
+.env
+
+*.log
 
 data/
 workflow-data/
+
 neo4j-data/
 postgres-data/
 pgadmin-data/
 
-.env
-*.log
+volumes/
+milvus_data/
+db/
+etcd/
+minio/
