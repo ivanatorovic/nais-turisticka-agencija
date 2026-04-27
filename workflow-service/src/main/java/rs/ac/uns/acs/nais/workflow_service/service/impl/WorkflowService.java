@@ -6,14 +6,13 @@ import org.springframework.web.server.ResponseStatusException;
 import rs.ac.uns.acs.nais.workflow_service.dto.CreateWorkflowRequest;
 import rs.ac.uns.acs.nais.workflow_service.dto.CreatesDTO;
 import rs.ac.uns.acs.nais.workflow_service.dto.WorkflowDTO;
-import rs.ac.uns.acs.nais.workflow_service.model.Role;
 import rs.ac.uns.acs.nais.workflow_service.model.User;
 import rs.ac.uns.acs.nais.workflow_service.model.Workflow;
 import rs.ac.uns.acs.nais.workflow_service.repository.UserRepository;
 import rs.ac.uns.acs.nais.workflow_service.repository.WorkflowRepository;
 import rs.ac.uns.acs.nais.workflow_service.service.IWorkflowService;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,12 +54,6 @@ public class WorkflowService implements IWorkflowService {
                         "User not found with id: " + request.getCreatorId()
                 ));
 
-        if (creator.getRole() != Role.ADMINISTRATOR) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Only administrator can create workflow."
-            );
-        }
 
         Long maxId = workflowRepository.findMaxId();
         Long newId = maxId + 1;
@@ -74,7 +67,7 @@ public class WorkflowService implements IWorkflowService {
         workflowRepository.createCreatesRelationship(
                 creator.getId(),
                 savedWorkflow.getId(),
-                LocalDateTime.now()
+                LocalDate.now()
         );
 
         return mapToDTO(savedWorkflow);
@@ -130,12 +123,6 @@ public class WorkflowService implements IWorkflowService {
             );
         }
 
-        if (user.getRole() != Role.ADMINISTRATOR) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Only administrator can create CREATES relationship."
-            );
-        }
 
         if (!workflowRepository.existsById(workflowId)) {
             throw new ResponseStatusException(
@@ -151,7 +138,7 @@ public class WorkflowService implements IWorkflowService {
             );
         }
 
-        LocalDateTime createdAt = LocalDateTime.now();
+        LocalDate createdAt = LocalDate.now();
 
         workflowRepository.createCreatesRelationship(userId, workflowId, createdAt);
 
@@ -179,7 +166,7 @@ public class WorkflowService implements IWorkflowService {
     }
 
     @Override
-    public CreatesDTO updateCreatesRelationship(Long userId, Long workflowId, LocalDateTime createdAt) {
+    public CreatesDTO updateCreatesRelationship(Long userId, Long workflowId, LocalDate createdAt) {
         if (!workflowRepository.existsCreatesRelationship(userId, workflowId)) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,

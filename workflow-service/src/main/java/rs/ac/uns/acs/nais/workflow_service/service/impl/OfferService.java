@@ -139,22 +139,28 @@ public class OfferService implements IOfferService {
         return mapToDTO(o);
     }
 
+    @Override
     public AccommodationDTO getAccommodation(Long offerId) {
-
-        Accommodation a = offerRepository.getAccommodationForOffer(offerId);
-
-        if (a == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No accommodation for this offer");
+        if (!offerRepository.existsById(offerId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Offer not found with id: " + offerId
+            );
         }
 
-        return new AccommodationDTO(
-                a.getId(),
-                a.getName(),
-                a.getType(),
-                a.getRating()
-        );
+        AccommodationDTO accommodation = offerRepository.getAccommodationForOffer(offerId);
+
+        if (accommodation == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Offer does not have accommodation"
+            );
+        }
+
+        return accommodation;
     }
 
+    @Override
     public List<OfferDTO> getOffersByAccommodation(Long accommodationId) {
 
         return offerRepository.getOffersForAccommodation(accommodationId)
@@ -163,6 +169,7 @@ public class OfferService implements IOfferService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public void removeAccommodation(Long offerId) {
 
         if (!offerRepository.existsById(offerId)) {
@@ -202,7 +209,7 @@ public class OfferService implements IOfferService {
             );
         }
 
-        Transport transport = offerRepository.getTransportForOffer(offerId);
+        TransportDTO transport = offerRepository.getTransportForOffer(offerId);
 
         if (transport == null) {
             throw new ResponseStatusException(
@@ -211,8 +218,9 @@ public class OfferService implements IOfferService {
             );
         }
 
-        return mapTransportToDTO(transport);
+        return transport;
     }
+
 
     @Override
     public List<OfferDTO> getOffersByTransport(Long transportId) {

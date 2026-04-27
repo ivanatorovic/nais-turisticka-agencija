@@ -8,6 +8,7 @@ import rs.ac.uns.acs.nais.workflow_service.model.Arrangement;
 import rs.ac.uns.acs.nais.workflow_service.model.Offer;
 import rs.ac.uns.acs.nais.workflow_service.model.Workflow;
 
+
 import java.util.List;
 
 public interface ArrangementRepository extends Neo4jRepository<Arrangement, Long> {
@@ -26,9 +27,10 @@ public interface ArrangementRepository extends Neo4jRepository<Arrangement, Long
 
     @Query("""
     MATCH (a:Arrangement {id: $arrangementId})-[:BASED_ON]->(w:Workflow)
-    RETURN w
+    RETURN w.id AS id,
+           w.name AS name
     """)
-    Workflow getWorkflowForArrangement(Long arrangementId);
+    WorkflowDTO getWorkflowForArrangement(Long arrangementId);
 
     @Query("""
     MATCH (w:Workflow {id: $workflowId})<-[:BASED_ON]-(a:Arrangement)
@@ -53,9 +55,13 @@ public interface ArrangementRepository extends Neo4jRepository<Arrangement, Long
 
     @Query("""
     MATCH (a:Arrangement {id: $arrangementId})-[:HAS_OFFER]->(o:Offer)
-    RETURN o
+    RETURN o.id AS id,
+           o.startDate AS startDate,
+           o.endDate AS endDate,
+           o.priceForChildren AS priceForChildren,
+           o.priceForAdults AS priceForAdults
     """)
-    List<Offer> getOffersForArrangement(Long arrangementId);
+    List<OfferDTO> getOffersForArrangement(Long arrangementId);
 
     @Query("""
     MATCH (o:Offer {id: $offerId})<-[:HAS_OFFER]-(a:Arrangement)
@@ -70,10 +76,26 @@ public interface ArrangementRepository extends Neo4jRepository<Arrangement, Long
     void removeOfferFromArrangement(Long arrangementId, Long offerId);
 
     @Query("""
+    MATCH (acc:Accommodation)-[:HAS_FACILITY]->(f:Facility)
+    WHERE acc.type = "HOTEL"
+    
+    WITH acc,
+         count(DISTINCT f) AS numberOfFacilities,
+         collect(DISTINCT f.name) AS facilities
+    
+    RETURN acc.id AS accommodationId,
+           acc.name AS hotel,
+           acc.rating AS rating,
+           numberOfFacilities AS numberOfFacilities,
+           facilities AS facilities
+    ORDER BY numberOfFacilities DESC, rating DESC
+    """)
+    List<HotelFacilitiesDTO> getHotelsWithFacilities();
+
+    @Query("""
     MATCH (admin:User)-[:CREATES]->(w:Workflow)<-[:BASED_ON]-(a1:Arrangement)
           -[:HAS_OFFER]->(o1:Offer)-[:HAS_TRANSPORT]->(t:Transport)
     WHERE admin.id = $adminId
-      AND admin.role = "ADMINISTRATOR"
 
     WITH admin, a1, t
 
@@ -124,7 +146,6 @@ public interface ArrangementRepository extends Neo4jRepository<Arrangement, Long
 
     @Query("""
     MATCH (admin:User)-[:CREATES]->(w:Workflow)<-[:BASED_ON]-(a:Arrangement)
-    WHERE admin.role = "ADMINISTRATOR"
     WITH admin, w, count(DISTINCT a) AS numberOfArrangements
     WHERE numberOfArrangements > 0
     RETURN admin.id AS adminId,
@@ -136,26 +157,11 @@ public interface ArrangementRepository extends Neo4jRepository<Arrangement, Long
     """)
     List<AdminWorkflowArrangementCountDTO> getArrangementCountByAdminWorkflow();
 
-    @Query("""
-    MATCH (acc:Accommodation)-[:HAS_FACILITY]->(f:Facility)
-    WHERE acc.type = "HOTEL"
-
-    WITH acc, count(f) AS numberOfFacilities, collect(f.name) AS facilities
-
-    RETURN acc.id AS accommodationId,
-           acc.name AS hotel,
-           acc.rating AS rating,
-           numberOfFacilities,
-           facilities
-    ORDER BY numberOfFacilities DESC, rating DESC
-    """)
-    List<HotelFacilitiesDTO> getHotelsWithFacilities();
 
     @Query("""
     MATCH (admin:User)-[:CREATES]->(w:Workflow)<-[:BASED_ON]-(a:Arrangement)
           -[:HAS_OFFER]->(o1:Offer)-[:HAS_ACCOMMODATION]->(acc1:Accommodation)
     WHERE admin.id = $adminId
-      AND admin.role = "ADMINISTRATOR"
       AND acc1.rating IS NOT NULL
 
     WITH admin, a, o1, acc1
@@ -176,4 +182,25 @@ public interface ArrangementRepository extends Neo4jRepository<Arrangement, Long
     ORDER BY arrangement, originalOfferId, betterRating DESC
     """)
     List<BetterAccommodationOfferDTO> findBetterAccommodationOffers(@Param("adminId") Long adminId);
+
+    @Query("""
+    MATCH (admin:User)-[:CREATES]->(:Workflow)<-[:BASED_ON]-(a:Arrangement)
+          -[:HAS_OFFER]->(:Offer)-[:HAS_ACCOMMODATION]->(acc:Accommodation)
+          -[:HAS_FACILITY]->(f:Facility)
+    WHERE admin.id = $adminId
+      AND acc.type = "HOTEL"
+      AND f.name IN ["BB", "HB", "AI"]
+    
+    WITH acc,
+         collect(DISTINCT f.name) AS mealFacilities,
+         collect(DISTINCT a.name) AS arrangements
+    
+    RETURN acc.id AS accommodationId,
+           acc.name AS hotel,
+           acc.rating AS rating,
+           mealFacilities AS mealFacilities,
+           arrangements AS arrangements
+    ORDER BY rating DESC
+    """)
+    List<HotelMealDTO> getAdminHotelsWithMealOptions(@Param("adminId") Long adminId);
 }

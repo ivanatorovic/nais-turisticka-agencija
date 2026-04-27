@@ -38,7 +38,9 @@ public interface IArrangementService {
 
     List<AdminWorkflowArrangementCountDTO> getArrangementCountByAdminWorkflow();
 
-    List<HotelFacilitiesDTO> getHotelsWithFacilities();
-
     List<BetterAccommodationOfferDTO> findBetterAccommodationOffers(Long adminId);
+
+    List<HotelMealDTO> getAdminHotelsWithMealOptions(Long adminId);
+
+
 }

@@ -1,17 +1,18 @@
 package rs.ac.uns.acs.nais.workflow_service.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class CreatesDTO {
 
     private Long userId;
     private Long workflowId;
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     public CreatesDTO() {
     }
 
-    public CreatesDTO(Long userId, Long workflowId, LocalDateTime createdAt) {
+    public CreatesDTO(Long userId, Long workflowId, LocalDate createdAt) {
         this.userId = userId;
         this.workflowId = workflowId;
         this.createdAt = createdAt;
@@ -25,7 +26,7 @@ public class CreatesDTO {
         return workflowId;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
 
@@ -37,7 +38,7 @@ public class CreatesDTO {
         this.workflowId = workflowId;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
     }
 }

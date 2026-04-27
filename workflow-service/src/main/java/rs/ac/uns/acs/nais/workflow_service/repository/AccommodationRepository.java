@@ -2,6 +2,7 @@ package rs.ac.uns.acs.nais.workflow_service.repository;
 
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
+import rs.ac.uns.acs.nais.workflow_service.dto.FacilityDTO;
 import rs.ac.uns.acs.nais.workflow_service.model.Accommodation;
 import rs.ac.uns.acs.nais.workflow_service.model.Facility;
 
@@ -22,9 +23,10 @@ public interface AccommodationRepository extends Neo4jRepository<Accommodation, 
 
     @Query("""
     MATCH (a:Accommodation {id: $accommodationId})-[:HAS_FACILITY]->(f:Facility)
-    RETURN f
+    RETURN f.id AS id,
+           f.name AS name
     """)
-    List<Facility> getFacilitiesForAccommodation(Long accommodationId);
+    List<FacilityDTO> getFacilitiesForAccommodation(Long accommodationId);
 
     @Query("""
     MATCH (f:Facility {id: $facilityId})<-[:HAS_FACILITY]-(a:Accommodation)
