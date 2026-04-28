@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  # ===== Drugarev Workflow servis =====
+
   workflow-service:
     build: ./workflow-service
     container_name: workflow-service
@@ -30,7 +30,7 @@ services:
     networks:
       - mynetwork
 
-  # ===== Recommendation servis =====
+
   neo4j:
     image: neo4j
     container_name: neo4j
@@ -40,7 +40,7 @@ services:
     environment:
       NEO4J_AUTH: neo4j/password
     volumes:
-      - ./data:/data
+      - recommendation_data:/data
     networks:
       - mynetwork
 
@@ -60,7 +60,7 @@ services:
     networks:
       - mynetwork
 
-  # ===== Dodatne aktivnosti =====
+
   neo4j-nais:
     image: neo4j
     container_name: neo4j-nais
@@ -90,7 +90,7 @@ services:
     networks:
       - mynetwork
 
-  # ===== MILVUS - vektorska baza =====
+
   etcd:
     container_name: milvus-etcd
     image: quay.io/coreos/etcd:v3.5.25
@@ -183,7 +183,7 @@ services:
     networks:
       - mynetwork
 
-  # ===== TVOJ MIKROSERVIS - Servis za žalbe =====
+
   zalbe-service:
     build:
       context: ./zalbe
@@ -205,6 +205,7 @@ services:
 volumes:
   nais_data:
   ollama_data:
+  recommendation_data:
 
 networks:
   mynetwork:
