@@ -82,6 +82,17 @@ public interface UserRepository extends Neo4jRepository<User, Long> {
         """)
     List<BookedArrangementResponse> findUserWithBookedRelationships(@Param("userId") Long userId);
 
+    @Query("""
+        MATCH (u:User {id: $userId})-[r:BOOKED]->(a:Arrangement {id: $arrangementId})
+        SET r.persons = COALESCE($persons, r.persons),
+            r.totalPrice = COALESCE($totalPrice, r.totalPrice),
+            r.bookingDate = toString(datetime())
+        RETURN u
+    """)
+    User updateBookedRelationship(@Param("userId") Long userId,
+                                  @Param("arrangementId") Long arrangementId,
+                                  @Param("persons") Integer persons,
+                                  @Param("totalPrice") Double totalPrice);
 
     @Query("""
             MATCH (u:User {id: $userId})-[:VIEWED]->(a1:Arrangement)-[:HAS_TAG]->(t:Tag)

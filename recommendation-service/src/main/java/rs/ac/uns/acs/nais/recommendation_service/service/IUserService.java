@@ -23,6 +23,7 @@ public interface IUserService {
     User addOrUpdateBooked(Long userId, Long arrangementId, Integer persons, Double totalPrice);
     void deleteBookedRelationship(Long userId, Long arrangementId);
     List<BookedArrangementResponse> findUserWithBookedRelationships(Long userId);
+    User updateBookedRelationship(Long userId, Long arrangementId, Integer persons, Double totalPrice);
 
     List<ArrangementRecommendationDto> recommendBasedOnViewed(Long userId);
     List<ArrangementRecommendationDto> recommendBasedOnBooked(Long userId);

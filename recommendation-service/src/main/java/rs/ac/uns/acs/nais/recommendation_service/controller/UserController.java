@@ -101,6 +101,18 @@ public class UserController {
         return ResponseEntity.ok(userService.findUserWithBookedRelationships(userId));
     }
 
+    @PatchMapping("/booked")
+    public ResponseEntity<Void> updateBookedRelationship(@RequestBody BookedRequestDTO dto) {
+        userService.updateBookedRelationship(
+                dto.getUserId(),
+                dto.getArrangementId(),
+                dto.getPersons(),
+                dto.getTotalPrice()
+        );
+
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/{userId}/recommendations/viewed")
     public ResponseEntity<List<ArrangementRecommendationDto>> recommendBasedOnViewed(@PathVariable Long userId) {
         return ResponseEntity.ok(userService.recommendBasedOnViewed(userId));

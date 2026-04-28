@@ -165,6 +165,40 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public User updateBookedRelationship(Long userId, Long arrangementId, Integer persons, Double totalPrice) {
+        if (!userRepository.existsById(userId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User not found with id: " + userId
+            );
+        }
+
+        if (!arrangementRepository.existsById(arrangementId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Arrangement not found with id: " + arrangementId
+            );
+        }
+
+        User updated = userRepository.updateBookedRelationship(
+                userId,
+                arrangementId,
+                persons,
+                totalPrice
+        );
+
+        if (updated == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "BOOKED relationship not found between user " + userId +
+                            " and arrangement " + arrangementId
+            );
+        }
+
+        return updated;
+    }
+
+    @Override
     public List<ArrangementRecommendationDto> recommendBasedOnViewed(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new ResponseStatusException(
