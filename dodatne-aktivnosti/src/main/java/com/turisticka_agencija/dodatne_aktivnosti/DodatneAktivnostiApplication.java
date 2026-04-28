@@ -2,12 +2,14 @@ package com.turisticka_agencija.dodatne_aktivnosti;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
-public class DodatneAktinvostiApplication {
+@EnableDiscoveryClient
+public class DodatneAktivnostiApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DodatneAktinvostiApplication.class, args);
+		SpringApplication.run(DodatneAktivnostiApplication.class, args);
 	}
 
 }
