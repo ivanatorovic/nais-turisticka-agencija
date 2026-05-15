@@ -228,11 +228,24 @@ services:
     networks:
       - mynetwork
 
+
+
+  sales-cassandra:
+    image: cassandra:latest
+    container_name: sales-cassandra
+    ports:
+      - "9042:9042"
+    volumes:
+      - sales_cassandra_data:/var/lib/cassandra
+    networks:
+      - mynetwork
+
 volumes:
   nais_data:
   ollama_data:
   recommendation_data:
   workflow_data:
+  sales_cassandra_data:
 
 networks:
   mynetwork:
