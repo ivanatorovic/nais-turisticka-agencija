@@ -2,7 +2,7 @@ FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /workspace/app
 
 COPY . .
-RUN mvn install -Dmaven.test.skip=true
+RUN mvn install -DskipTests
 
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
@@ -15,6 +15,6 @@ COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
 
-EXPOSE 8082
+EXPOSE 9000
 
-ENTRYPOINT ["java", "-cp", "app:app/lib/*", "com.turisticka_agencija.dodatne_aktivnosti.DodatneAktivnostiApplication"]
+ENTRYPOINT ["java", "-cp", "app:app/lib/*", "com.example.gatewayservice.GatewayServiceApplication"]
