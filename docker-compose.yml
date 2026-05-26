@@ -228,11 +228,63 @@ services:
     networks:
       - mynetwork
 
+  analiza-aktivnosti:
+    build:
+      context: ./analiza-aktivnosti
+      dockerfile: Dockerfile
+    image: analiza-aktivnosti:latest
+    container_name: analiza-aktivnosti
+    restart: on-failure
+    depends_on:
+      - eureka-service
+      - cassandradb
+      - redisdb
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-service:8761/eureka/
+      SPRING_CASSANDRA_CONTACT_POINTS: cassandradb
+      SPRING_CASSANDRA_PORT: 9042
+      SPRING_CASSANDRA_KEYSPACE_NAME: nais
+      SPRING_CASSANDRA_LOCAL_DATACENTER: datacenter1
+      SPRING_CASSANDRA_SCHEMA_ACTION: CREATE_IF_NOT_EXISTS
+      REDIS_HOST: redisdb
+      REDIS_PORT: 6379
+    ports:
+      - "8085:8085"
+    networks:
+      - mynetwork
+
+  cassandradb:
+    image: cassandra:4
+    ports:
+      - "9042:9042"
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    healthcheck:
+      test: [ "CMD-SHELL", "nodetool status | grep UN" ]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+    networks:
+      - mynetwork
+
+  redisdb:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mynetwork
+
 volumes:
   nais_data:
   ollama_data:
   recommendation_data:
   workflow_data:
+  cassandra_data:
 
 networks:
   mynetwork:
