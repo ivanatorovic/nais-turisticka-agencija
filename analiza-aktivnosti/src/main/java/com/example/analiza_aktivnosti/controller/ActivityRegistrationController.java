@@ -1,5 +1,6 @@
 package com.example.analiza_aktivnosti.controller;
 
+import com.example.analiza_aktivnosti.dto.ActivityPeopleCountDto;
 import com.example.analiza_aktivnosti.entity.RegistrationByActivity;
 import com.example.analiza_aktivnosti.service.ActivityRegistrationService;
 import org.springframework.http.HttpStatus;
@@ -60,7 +61,8 @@ public class ActivityRegistrationController {
     }
 
     @GetMapping("/people-count/{activityId}")
-    public ResponseEntity<Long> countPeopleByActivity(@PathVariable Long activityId) {
-        return ResponseEntity.ok(activityRegistrationService.countPeopleByActivity(activityId));
+    public ResponseEntity<ActivityPeopleCountDto> countPeopleByActivity(@PathVariable Long activityId) {
+        Long totalPeople = activityRegistrationService.countPeopleByActivity(activityId);
+        return ResponseEntity.ok(new ActivityPeopleCountDto(activityId, totalPeople));
     }
 }

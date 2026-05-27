@@ -1,5 +1,6 @@
 package com.example.analiza_aktivnosti.controller;
 
+import com.example.analiza_aktivnosti.dto.ActivityAverageOccupancyDto;
 import com.example.analiza_aktivnosti.entity.ActivityOccupancyByExecution;
 import com.example.analiza_aktivnosti.service.ActivityOccupancyByExecutionService;
 import org.springframework.http.HttpStatus;
@@ -61,7 +62,12 @@ public class ActivityOccupancyByExecutionController {
     }
 
     @GetMapping("/average/{activityId}")
-    public ResponseEntity<Double> averageOccupancyByActivity(@PathVariable Long activityId) {
-        return ResponseEntity.ok(service.averageOccupancyByActivity(activityId));
+    public ResponseEntity<ActivityAverageOccupancyDto> averageOccupancyByActivity(@PathVariable Long activityId) {
+        return ResponseEntity.ok(
+                new ActivityAverageOccupancyDto(
+                        activityId,
+                        service.averageOccupancyByActivity(activityId)
+                )
+        );
     }
 }

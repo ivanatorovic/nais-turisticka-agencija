@@ -29,6 +29,12 @@ public class RevenueByActivity {
     @Column("total_price")
     private BigDecimal totalPrice;
 
+    @Column("activity_name")
+    private String activityName;
+
+    @Column("number_of_people")
+    private Integer numberOfPeople;
+
     public Long getActivityId() { return activityId; }
     public void setActivityId(Long activityId) { this.activityId = activityId; }
 
@@ -46,4 +52,20 @@ public class RevenueByActivity {
 
     public BigDecimal getTotalPrice() { return totalPrice; }
     public void setTotalPrice(BigDecimal totalPrice) { this.totalPrice = totalPrice; }
+
+    public String getActivityName() {
+        return activityName;
+    }
+
+    public void setActivityName(String activityName) {
+        this.activityName = activityName;
+    }
+
+    public Integer getNumberOfPeople() {
+        return numberOfPeople;
+    }
+
+    public void setNumberOfPeople(Integer numberOfPeople) {
+        this.numberOfPeople = numberOfPeople;
+    }
 }

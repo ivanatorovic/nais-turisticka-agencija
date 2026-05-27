@@ -1,5 +1,6 @@
 package com.example.analiza_aktivnosti.controller;
 
+import com.example.analiza_aktivnosti.dto.ActivityRevenueDto;
 import com.example.analiza_aktivnosti.entity.RevenueByActivity;
 import com.example.analiza_aktivnosti.service.RevenueByActivityService;
 import org.springframework.http.HttpStatus;
@@ -64,7 +65,12 @@ public class RevenueByActivityController {
     }
 
     @GetMapping("/total/{activityId}")
-    public ResponseEntity<BigDecimal> sumRevenueByActivity(@PathVariable Long activityId) {
-        return ResponseEntity.ok(service.sumRevenueByActivity(activityId));
+    public ResponseEntity<ActivityRevenueDto> sumRevenueByActivity(@PathVariable Long activityId) {
+        return ResponseEntity.ok(
+                new ActivityRevenueDto(
+                        activityId,
+                        service.sumRevenueByActivity(activityId)
+                )
+        );
     }
 }
