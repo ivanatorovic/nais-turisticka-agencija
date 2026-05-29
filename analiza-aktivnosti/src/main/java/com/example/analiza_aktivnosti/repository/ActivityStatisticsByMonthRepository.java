@@ -11,8 +11,12 @@ import java.util.List;
 public interface ActivityStatisticsByMonthRepository
         extends CassandraRepository<ActivityStatisticsByMonth, String> {
 
-    @Query("SELECT * FROM activity_statistics_by_month WHERE month = ?0")
-    List<ActivityStatisticsByMonth> findByMonth(String month);
+    @Query("""
+        SELECT * FROM activity_statistics_by_month
+        WHERE month = ?0
+        LIMIT 3
+        """)
+    List<ActivityStatisticsByMonth> findTop3ByMonth(String month);
 
     @Query("SELECT * FROM activity_statistics_by_month WHERE month = ?0 AND activity_id = ?1")
     ActivityStatisticsByMonth findOne(String month, Long activityId);

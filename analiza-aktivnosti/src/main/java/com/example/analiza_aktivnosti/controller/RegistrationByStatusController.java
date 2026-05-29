@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/registrations-by-status")
 public class RegistrationByStatusController {
@@ -47,23 +50,27 @@ public class RegistrationByStatusController {
         );
     }
 
-    @GetMapping("/cancelled")
-    public ResponseEntity<?> getCancelledRegistrations() {
+    @GetMapping("/cancelled/date-range")
+    public ResponseEntity<?> getCancelledRegistrationsBetween(
+            @RequestParam LocalDate from,
+            @RequestParam LocalDate to
+    ) {
 
         return ResponseEntity.ok(
-                service.getCancelledRegistrations()
+                service.getCancelledRegistrationsBetween(from, to)
         );
     }
 
-    @PutMapping("/{status}/{registrationId}")
+    @PutMapping("/{status}/{registrationDate}/{registrationId}")
     public ResponseEntity<?> update(
             @PathVariable String status,
+            @PathVariable LocalDate registrationDate,
             @PathVariable Long registrationId,
             @RequestBody RegistrationByStatus updated
     ) {
 
         RegistrationByStatus result =
-                service.update(status, registrationId, updated);
+                service.update(status, registrationDate,registrationId, updated);
 
         if (result == null) {
             return ResponseEntity.notFound().build();
@@ -72,14 +79,15 @@ public class RegistrationByStatusController {
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/{status}/{registrationId}")
+    @DeleteMapping("/{status}/{registrationDate}/{registrationId}")
     public ResponseEntity<?> delete(
             @PathVariable String status,
+            @PathVariable LocalDate registrationDate,
             @PathVariable Long registrationId
     ) {
 
         boolean deleted =
-                service.delete(status, registrationId);
+                service.delete(status, registrationDate,registrationId);
 
         if (!deleted) {
             return ResponseEntity.notFound().build();

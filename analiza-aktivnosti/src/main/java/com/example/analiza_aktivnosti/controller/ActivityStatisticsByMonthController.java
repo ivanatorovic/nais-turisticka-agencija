@@ -39,7 +39,7 @@ public class ActivityStatisticsByMonthController {
         );
     }
 
-    @GetMapping("/month/{month}")
+    @GetMapping("/month/top3/{month}")
     public ResponseEntity<List<ActivityStatisticsByMonth>> getByMonth(
             @PathVariable String month
     ) {

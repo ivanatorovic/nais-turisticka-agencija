@@ -6,34 +6,25 @@ import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Table("registrations_by_status")
-public class RegistrationByStatus {
+@Table("arrangement_activity_revenue")
+public class ArrangementActivityRevenue {
 
-    @PrimaryKeyColumn(name = "status", type = PrimaryKeyType.PARTITIONED)
-    private String status;
+    @PrimaryKeyColumn(name = "arrangement_id", type = PrimaryKeyType.PARTITIONED)
+    private Long arrangementId;
 
-    @PrimaryKeyColumn(
-            name = "registration_date",
-            type = PrimaryKeyType.CLUSTERED,
-            ordinal = 0
-    )
-    private LocalDate registrationDate;
-
-    @PrimaryKeyColumn(
-            name = "registration_id",
-            type = PrimaryKeyType.CLUSTERED,
-            ordinal = 1
-    )
-    private Long registrationId;
-
-    @Column("activity_id")
+    @PrimaryKeyColumn(name = "activity_id", ordinal = 0)
     private Long activityId;
+
+    @PrimaryKeyColumn(name = "registration_id", ordinal = 1)
+    private Long registrationId;
 
     @Column("activity_name")
     private String activityName;
+
+    @Column("registration_date")
+    private LocalDateTime registrationDate;
 
     @Column("customer_id")
     private Long customerId;
@@ -47,20 +38,12 @@ public class RegistrationByStatus {
     @Column("total_price")
     private BigDecimal totalPrice;
 
-    public String getStatus() {
-        return status;
+    public Long getArrangementId() {
+        return arrangementId;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Long getRegistrationId() {
-        return registrationId;
-    }
-
-    public void setRegistrationId(Long registrationId) {
-        this.registrationId = registrationId;
+    public void setArrangementId(Long arrangementId) {
+        this.arrangementId = arrangementId;
     }
 
     public Long getActivityId() {
@@ -71,12 +54,28 @@ public class RegistrationByStatus {
         this.activityId = activityId;
     }
 
+    public Long getRegistrationId() {
+        return registrationId;
+    }
+
+    public void setRegistrationId(Long registrationId) {
+        this.registrationId = registrationId;
+    }
+
     public String getActivityName() {
         return activityName;
     }
 
     public void setActivityName(String activityName) {
         this.activityName = activityName;
+    }
+
+    public LocalDateTime getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(LocalDateTime registrationDate) {
+        this.registrationDate = registrationDate;
     }
 
     public Long getCustomerId() {
@@ -93,14 +92,6 @@ public class RegistrationByStatus {
 
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
-    }
-
-    public LocalDate getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(LocalDate registrationDate) {
-        this.registrationDate = registrationDate;
     }
 
     public Integer getNumberOfPeople() {

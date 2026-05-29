@@ -42,7 +42,7 @@ public class ActivityStatisticsByMonthService {
             throw new IllegalArgumentException("Mesec je obavezan.");
         }
 
-        return repository.findByMonth(month)
+        return repository.findTop3ByMonth(month)
                 .stream()
                 .sorted(
                         Comparator.comparing(

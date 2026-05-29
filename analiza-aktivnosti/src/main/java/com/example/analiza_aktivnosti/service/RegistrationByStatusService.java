@@ -5,6 +5,7 @@ import com.example.analiza_aktivnosti.repository.RegistrationByStatusRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class RegistrationByStatusService {
         validateForCreate(registration);
 
         if (registration.getRegistrationDate() == null) {
-            registration.setRegistrationDate(LocalDateTime.now(Clock.systemUTC()));
+            registration.setRegistrationDate(LocalDate.now(Clock.systemUTC()));
         }
 
         return repository.save(registration);
@@ -41,12 +42,25 @@ public class RegistrationByStatusService {
         return repository.findByStatus(status);
     }
 
-    public List<RegistrationByStatus> getCancelledRegistrations() {
-        return repository.findByStatus("CANCELLED");
+    public List<RegistrationByStatus> getCancelledRegistrationsBetween(
+            LocalDate from,
+            LocalDate to
+    ) {
+
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("Datumi su obavezni.");
+        }
+
+        if (from.isAfter(to)) {
+            throw new IllegalArgumentException("Početni datum ne sme biti posle krajnjeg.");
+        }
+
+        return repository.findByStatusAndDateRange("CANCELLED", from, to);
     }
 
     public RegistrationByStatus update(
             String status,
+            LocalDate registrationDate,
             Long registrationId,
             RegistrationByStatus updated
     ) {
@@ -60,7 +74,7 @@ public class RegistrationByStatusService {
         }
 
         RegistrationByStatus existing =
-                repository.findOne(status, registrationId);
+                repository.findOne(status, registrationDate, registrationId);
 
         if (existing == null) {
             return null;
@@ -80,10 +94,6 @@ public class RegistrationByStatusService {
 
         if (updated.getCustomerName() != null) {
             existing.setCustomerName(updated.getCustomerName());
-        }
-
-        if (updated.getRegistrationDate() != null) {
-            existing.setRegistrationDate(updated.getRegistrationDate());
         }
 
         if (updated.getNumberOfPeople() != null) {
@@ -111,16 +121,20 @@ public class RegistrationByStatusService {
         return repository.save(existing);
     }
 
-    public boolean delete(String status, Long registrationId) {
+    public boolean delete(
+            String status,
+            LocalDate registrationDate,
+            Long registrationId
+    ) {
 
         RegistrationByStatus existing =
-                repository.findOne(status, registrationId);
+                repository.findOne(status, registrationDate, registrationId);
 
         if (existing == null) {
             return false;
         }
 
-        repository.deleteOne(status, registrationId);
+        repository.deleteOne(status, registrationDate, registrationId);
 
         return true;
     }
