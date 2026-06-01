@@ -5,7 +5,6 @@ import com.example.analiza_aktivnosti.repository.ActivityStatisticsByMonthReposi
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -13,11 +12,15 @@ public class ActivityStatisticsByMonthService {
 
     private final ActivityStatisticsByMonthRepository repository;
 
-    public ActivityStatisticsByMonthService(ActivityStatisticsByMonthRepository repository) {
+    public ActivityStatisticsByMonthService(
+            ActivityStatisticsByMonthRepository repository
+    ) {
         this.repository = repository;
     }
 
-    public ActivityStatisticsByMonth create(ActivityStatisticsByMonth statistics) {
+    public ActivityStatisticsByMonth create(
+            ActivityStatisticsByMonth statistics
+    ) {
 
         validate(statistics);
 
@@ -36,48 +39,44 @@ public class ActivityStatisticsByMonthService {
         return repository.findAll();
     }
 
-    public List<ActivityStatisticsByMonth> getByMonth(String month) {
+    public List<ActivityStatisticsByMonth> getTop3ByMonth(
+            String month
+    ) {
 
         if (month == null || month.isBlank()) {
-            throw new IllegalArgumentException("Mesec je obavezan.");
+            throw new IllegalArgumentException(
+                    "Mesec je obavezan."
+            );
         }
 
-        return repository.findTop3ByMonth(month)
-                .stream()
-                .sorted(
-                        Comparator.comparing(
-                                ActivityStatisticsByMonth::getTotalRevenue
-                        ).reversed()
-                )
-                .toList();
+        return repository.findTop3ByMonth(month);
     }
 
     public ActivityStatisticsByMonth update(
             String month,
+            BigDecimal totalRevenue,
             Long activityId,
             ActivityStatisticsByMonth updated
     ) {
 
         ActivityStatisticsByMonth existing =
-                repository.findOne(month, activityId);
+                repository.findOne(
+                        month,
+                        totalRevenue,
+                        activityId
+                );
 
         if (existing == null) {
             return null;
         }
 
+        BigDecimal oldRevenue =
+                existing.getTotalRevenue();
+
         if (updated.getActivityName() != null) {
-            existing.setActivityName(updated.getActivityName());
-        }
-
-        if (updated.getTotalRevenue() != null) {
-
-            if (updated.getTotalRevenue().signum() < 0) {
-                throw new IllegalArgumentException(
-                        "Ukupna zarada ne sme biti negativna."
-                );
-            }
-
-            existing.setTotalRevenue(updated.getTotalRevenue());
+            existing.setActivityName(
+                    updated.getActivityName()
+            );
         }
 
         if (updated.getTotalPeople() != null) {
@@ -88,80 +87,62 @@ public class ActivityStatisticsByMonthService {
                 );
             }
 
-            existing.setTotalPeople(updated.getTotalPeople());
+            existing.setTotalPeople(
+                    updated.getTotalPeople()
+            );
         }
+
+        if (updated.getTotalRevenue() != null) {
+
+            if (updated.getTotalRevenue().signum() < 0) {
+                throw new IllegalArgumentException(
+                        "Ukupna zarada ne sme biti negativna."
+                );
+            }
+
+            existing.setTotalRevenue(
+                    updated.getTotalRevenue()
+            );
+        }
+
+        repository.deleteOne(
+                month,
+                oldRevenue,
+                activityId
+        );
 
         return repository.save(existing);
     }
 
-    public boolean delete(String month, Long activityId) {
+    public boolean delete(
+            String month,
+            BigDecimal totalRevenue,
+            Long activityId
+    ) {
 
         ActivityStatisticsByMonth existing =
-                repository.findOne(month, activityId);
+                repository.findOne(
+                        month,
+                        totalRevenue,
+                        activityId
+                );
 
         if (existing == null) {
             return false;
         }
 
-        repository.deleteOne(month, activityId);
+        repository.deleteOne(
+                month,
+                totalRevenue,
+                activityId
+        );
 
         return true;
     }
 
-    public void increaseStatistics(
-            String month,
-            Long activityId,
-            String activityName,
-            BigDecimal revenueToAdd,
-            Integer peopleToAdd
+    private void validate(
+            ActivityStatisticsByMonth statistics
     ) {
-
-        ActivityStatisticsByMonth existing =
-                repository.findOne(month, activityId);
-
-        if (existing == null) {
-
-            existing = new ActivityStatisticsByMonth();
-
-            existing.setMonth(month);
-            existing.setActivityId(activityId);
-            existing.setActivityName(activityName);
-            existing.setTotalRevenue(BigDecimal.ZERO);
-            existing.setTotalPeople(0);
-        }
-
-        existing.setTotalRevenue(
-                existing.getTotalRevenue().add(revenueToAdd)
-        );
-
-        existing.setTotalPeople(
-                existing.getTotalPeople() + peopleToAdd
-        );
-
-        repository.save(existing);
-    }
-
-    public void decreaseStatistics(
-            String month,
-            Long activityId,
-            BigDecimal revenueToSubtract
-    ) {
-
-        ActivityStatisticsByMonth existing =
-                repository.findOne(month, activityId);
-
-        if (existing == null) {
-            return;
-        }
-
-        existing.setTotalRevenue(
-                existing.getTotalRevenue().subtract(revenueToSubtract)
-        );
-
-        repository.save(existing);
-    }
-
-    private void validate(ActivityStatisticsByMonth statistics) {
 
         if (statistics == null) {
             throw new IllegalArgumentException(
@@ -188,6 +169,22 @@ public class ActivityStatisticsByMonthService {
 
             throw new IllegalArgumentException(
                     "Naziv aktivnosti je obavezan."
+            );
+        }
+
+        if (statistics.getTotalRevenue() != null
+                && statistics.getTotalRevenue().signum() < 0) {
+
+            throw new IllegalArgumentException(
+                    "Ukupna zarada ne sme biti negativna."
+            );
+        }
+
+        if (statistics.getTotalPeople() != null
+                && statistics.getTotalPeople() < 0) {
+
+            throw new IllegalArgumentException(
+                    "Broj ljudi ne sme biti negativan."
             );
         }
     }

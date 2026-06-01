@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -40,24 +41,25 @@ public class ActivityStatisticsByMonthController {
     }
 
     @GetMapping("/month/top3/{month}")
-    public ResponseEntity<List<ActivityStatisticsByMonth>> getByMonth(
+    public ResponseEntity<List<ActivityStatisticsByMonth>> getTop3ByMonth(
             @PathVariable String month
     ) {
 
         return ResponseEntity.ok(
-                service.getByMonth(month)
+                service.getTop3ByMonth(month)
         );
     }
 
-    @PutMapping("/{month}/{activityId}")
+    @PutMapping("/{month}/{totalRevenue}/{activityId}")
     public ResponseEntity<ActivityStatisticsByMonth> update(
             @PathVariable String month,
+            @PathVariable BigDecimal totalRevenue,
             @PathVariable Long activityId,
             @RequestBody ActivityStatisticsByMonth updated
     ) {
 
         ActivityStatisticsByMonth result =
-                service.update(month, activityId, updated);
+                service.update(month, totalRevenue, activityId, updated);
 
         if (result == null) {
             return ResponseEntity.notFound().build();
@@ -66,14 +68,15 @@ public class ActivityStatisticsByMonthController {
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/{month}/{activityId}")
+    @DeleteMapping("/{month}/{totalRevenue}/{activityId}")
     public ResponseEntity<Void> delete(
             @PathVariable String month,
+            @PathVariable BigDecimal totalRevenue,
             @PathVariable Long activityId
     ) {
 
         boolean deleted =
-                service.delete(month, activityId);
+                service.delete(month, totalRevenue, activityId);
 
         if (!deleted) {
             return ResponseEntity.notFound().build();

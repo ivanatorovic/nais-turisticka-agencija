@@ -16,15 +16,10 @@ import java.util.List;
 public class RevenueByActivityService {
 
     private final RevenueByActivityRepository repository;
-    private final ActivityStatisticsByMonthService statisticsService;
 
     public RevenueByActivityService(
-            RevenueByActivityRepository repository,
-            ActivityStatisticsByMonthService statisticsService
-    ) {
-        this.repository = repository;
-        this.statisticsService = statisticsService;
-    }
+            RevenueByActivityRepository repository) {
+        this.repository = repository;}
 
     @CacheEvict(value = "activityRevenue", key = "#revenue.activityId")
     public RevenueByActivity create(RevenueByActivity revenue) {
@@ -35,16 +30,6 @@ public class RevenueByActivityService {
         }
 
         RevenueByActivity saved = repository.save(revenue);
-
-        String month = extractMonth(saved.getRegistrationDate());
-
-        statisticsService.increaseStatistics(
-                month,
-                saved.getActivityId(),
-                saved.getActivityName(),
-                saved.getTotalPrice(),
-                saved.getNumberOfPeople()
-        );
 
         return saved;
     }
@@ -68,9 +53,6 @@ public class RevenueByActivityService {
         if (existing == null) {
             return null;
         }
-
-        BigDecimal oldPrice = existing.getTotalPrice();
-        String oldMonth = extractMonth(existing.getRegistrationDate());
 
         if (updated.getRegistrationDate() != null) {
             existing.setRegistrationDate(updated.getRegistrationDate());
@@ -104,15 +86,6 @@ public class RevenueByActivityService {
 
         RevenueByActivity saved = repository.save(existing);
 
-        statisticsService.decreaseStatistics(oldMonth, activityId, oldPrice);
-        statisticsService.increaseStatistics(
-                extractMonth(saved.getRegistrationDate()),
-                saved.getActivityId(),
-                saved.getActivityName(),
-                saved.getTotalPrice(),
-                saved.getNumberOfPeople()
-        );
-
         return saved;
     }
 
@@ -125,12 +98,6 @@ public class RevenueByActivityService {
         }
 
         repository.deleteOne(activityId, registrationId);
-
-        statisticsService.decreaseStatistics(
-                extractMonth(existing.getRegistrationDate()),
-                existing.getActivityId(),
-                existing.getTotalPrice()
-        );
 
         return true;
     }

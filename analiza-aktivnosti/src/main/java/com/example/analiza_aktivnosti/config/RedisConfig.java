@@ -34,25 +34,48 @@ public class RedisConfig {
 
     @Bean
     public RedisCacheManager cacheManager() {
-        RedisCacheConfiguration defaultConfig = RedisCacheConfiguration
-                .defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(10))
-                .disableCachingNullValues()
-                .serializeValuesWith(
-                        SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer())
-                );
 
-        RedisCacheConfiguration activityPeopleCountConfig = RedisCacheConfiguration
-                .defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(5))
-                .disableCachingNullValues()
-                .serializeValuesWith(
-                        SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer())
-                );
+        RedisCacheConfiguration defaultConfig = createConfig(Duration.ofMinutes(10));
+
+        RedisCacheConfiguration activityOccupancyConfig =
+                createConfig(Duration.ofMinutes(10));
+
+        RedisCacheConfiguration activityRevenueConfig =
+                createConfig(Duration.ofMinutes(10));
+
+        RedisCacheConfiguration arrangementRevenueStatisticsConfig =
+                createConfig(Duration.ofMinutes(10));
 
         return RedisCacheManager.builder(redisConnectionFactory())
                 .cacheDefaults(defaultConfig)
-                .withCacheConfiguration("activityPeopleCount", activityPeopleCountConfig)
+
+                .withCacheConfiguration(
+                        "activityOccupancy",
+                        activityOccupancyConfig
+                )
+
+                .withCacheConfiguration(
+                        "activityRevenue",
+                        activityRevenueConfig
+                )
+
+                .withCacheConfiguration(
+                        "arrangementRevenueStatistics",
+                        arrangementRevenueStatisticsConfig
+                )
+
                 .build();
+    }
+
+    private RedisCacheConfiguration createConfig(Duration ttl) {
+        return RedisCacheConfiguration
+                .defaultCacheConfig()
+                .entryTtl(ttl)
+                .disableCachingNullValues()
+                .serializeValuesWith(
+                        SerializationPair.fromSerializer(
+                                new GenericJackson2JsonRedisSerializer()
+                        )
+                );
     }
 }
