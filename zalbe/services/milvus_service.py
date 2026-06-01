@@ -15,11 +15,10 @@ class MilvusService:
         logger.info("Uspešno povezano na Milvus.")
 
     def has_collection(self, collection_name: str) -> bool:
-        """Proverava da li kolekcija postoji."""
+       
         return self.client.has_collection(collection_name)
 
     def create_collection(self, collection_name: str, schema, index_params):
-        """Kreira novu kolekciju sa datom šemom i indeksima."""
         self.client.create_collection(
             collection_name=collection_name,
             schema=schema,
@@ -29,13 +28,11 @@ class MilvusService:
         logger.info("Kreirana kolekcija '%s'.", collection_name)
 
     def drop_collection(self, collection_name: str):
-        """Briše kolekciju."""
         if self.has_collection(collection_name):
             self.client.drop_collection(collection_name)
             logger.info("Obrisana kolekcija '%s'.", collection_name)
 
     def load_collection(self, collection_name: str):
-        """Učitava kolekciju u memoriju (obavezno pre pretrage)."""
         self.client.load_collection(collection_name)
         logger.info("Učitana kolekcija '%s' u memoriju.", collection_name)
 

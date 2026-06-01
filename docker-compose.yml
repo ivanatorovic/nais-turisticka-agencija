@@ -30,7 +30,6 @@ services:
     networks:
       - mynetwork
 
-
   neo4j:
     image: neo4j
     container_name: neo4j
@@ -59,7 +58,6 @@ services:
       SPRING_NEO4J_PASSWORD: password
     networks:
       - mynetwork
-
 
   neo4j-nais:
     image: neo4j
@@ -91,7 +89,6 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-service:8761/eureka/
     networks:
       - mynetwork
-
 
   etcd:
     container_name: milvus-etcd
@@ -185,7 +182,6 @@ services:
     networks:
       - mynetwork
 
-
   zalbe-service:
     build:
       context: ./zalbe
@@ -198,7 +194,7 @@ services:
       MILVUS_PORT: 19530
       APP_PORT: 8000
     ports:
-      - "8000:8000"
+      - "8005:8000"
     depends_on:
       - standalone
     networks:
@@ -253,10 +249,43 @@ services:
     networks:
       - mynetwork
 
+  analiza-zalbi:
+    build:
+      context: ./analiza-zalbi
+      dockerfile: Dockerfile
+    image: analiza-zalbi:latest
+    container_name: analiza-zalbi
+    restart: on-failure
+    environment:
+      CASSANDRA_HOST: cassandra-db
+      CASSANDRA_PORT: 9042
+      CASSANDRA_KEYSPACE: zalbe_keyspace
+      REDIS_HOST: redis-db
+      REDIS_PORT: 6379
+      APP_PORT: 8000
+    ports:
+      - "8006:8000"
+    networks:
+      - mynetwork
+
+  redisdb:
+    image: redis:7
+    container_name: redisdb
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mynetwork
+
   cassandradb:
     image: cassandra:4
+    container_name: cassandradb
     ports:
-      - "9042:9042"
+      - "9043:9042"
     volumes:
       - cassandra_data:/var/lib/cassandra
     healthcheck:
@@ -264,18 +293,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 10
-    networks:
-      - mynetwork
-
-  redisdb:
-    image: redis:7
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     networks:
       - mynetwork
 

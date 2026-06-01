@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_zalba(zalba: dict) -> dict:
-    """Dodaje novu žalbu. Vektorizuje naslov i opis."""
+    """Vektorizuje naslov i opis."""
     naslov_vector = embedding_service.encode_one(zalba["naslov"])
     opis_vector = embedding_service.encode_one(zalba["opis"])
     
@@ -27,7 +27,6 @@ def create_zalba(zalba: dict) -> dict:
 
 
 def get_zalba_by_id(zalba_id: int) -> dict | None:
-    """Dohvata jednu žalbu po ID-u."""
     client = milvus_service.client
     result = client.get(
         collection_name=ZALBE_COLLECTION,
@@ -40,7 +39,7 @@ def get_zalba_by_id(zalba_id: int) -> dict | None:
 
 
 def get_all_zalbe(limit: int = 100) -> list[dict]:
-    """Dohvata sve žalbe (sa limitom)."""
+   
     client = milvus_service.client
     result = client.query(
         collection_name=ZALBE_COLLECTION,
@@ -52,7 +51,6 @@ def get_all_zalbe(limit: int = 100) -> list[dict]:
 
 
 def get_zalbe_by_filter(filter_expr: str, limit: int = 100) -> list[dict]:
-    """Dohvata žalbe po filteru."""
     client = milvus_service.client
     result = client.query(
         collection_name=ZALBE_COLLECTION,
@@ -64,7 +62,6 @@ def get_zalbe_by_filter(filter_expr: str, limit: int = 100) -> list[dict]:
 
 
 def count_zalbe(filter_expr: str = "") -> int:
-    """Prebrojava žalbe."""
     client = milvus_service.client
     if filter_expr:
         result = client.query(
@@ -78,7 +75,6 @@ def count_zalbe(filter_expr: str = "") -> int:
 
 
 def update_zalba(zalba_id: int, nova_polja: dict) -> dict:
-    """Ažurira postojeću žalbu. Re-vektorizuje naslov i opis."""
     trenutna = get_zalba_by_id(zalba_id)
     if not trenutna:
         return {"status": "error", "message": f"Žalba ID={zalba_id} ne postoji"}
@@ -95,7 +91,7 @@ def update_zalba(zalba_id: int, nova_polja: dict) -> dict:
 
 
 def delete_zalba(zalba_id: int) -> dict:
-    """Briše žalbu po ID-u."""
+    
     client = milvus_service.client
     client.delete(
         collection_name=ZALBE_COLLECTION,
@@ -106,7 +102,6 @@ def delete_zalba(zalba_id: int) -> dict:
 
 
 def delete_zalbe_by_filter(filter_expr: str) -> dict:
-    """Briše više žalbi po filteru."""
     client = milvus_service.client
     result = client.delete(
         collection_name=ZALBE_COLLECTION,
@@ -116,11 +111,9 @@ def delete_zalbe_by_filter(filter_expr: str) -> dict:
     return {"status": "success", "filter": filter_expr, "result": result}
 
 
-# ============================================================
+
 # UPITI - PROSTI
-# ============================================================
 def filtriraj_zalbe_po_kategoriji(kategorija: str, limit: int = 10) -> list[dict]:
-    """PROST UPIT: Filtriranje žalbi po kategoriji."""
     logger.info("Filtriram žalbe po kategoriji='%s'", kategorija)
     client = milvus_service.client
     result = client.query(
@@ -132,16 +125,13 @@ def filtriraj_zalbe_po_kategoriji(kategorija: str, limit: int = 10) -> list[dict
     return result
 
 
-# ============================================================
 # UPITI - SLOŽENI
-# ============================================================
 def pretrazi_slicne_zalbe_po_kategoriji_i_prioritetu(
     tekst_upita: str,
     kategorija: str,
     prioritet: int,
     top_k: int = DEFAULT_TOP_K
 ) -> list[dict]:
-    """SLOŽEN UPIT: Vektorska pretraga + filter (2 uslova)."""
     logger.info("Vektorska + filter: tekst='%s', kategorija='%s', prioritet=%d",
                 tekst_upita, kategorija, prioritet)
     
@@ -177,7 +167,6 @@ def pretrazi_slicne_zalbe_po_timu_iterator(
     tim: str,
     batch_size: int = 20
 ) -> list[dict]:
-    """SLOŽEN UPIT: Vektorska pretraga sa filterom uz korišćenje iteratora."""
     logger.info("Vektorska + iterator: tekst='%s', tim='%s', batch_size=%d",
                 tekst_upita, tim, batch_size)
     
@@ -221,7 +210,6 @@ def hibridna_pretraga_po_naslovu_i_opisu(
     tekst_upita: str,
     top_k: int = DEFAULT_TOP_K
 ) -> list[dict]:
-    """SLOŽEN UPIT: Hibridna pretraga (naslov + opis)."""
     logger.info("Hibridna pretraga: tekst='%s'", tekst_upita)
     
     upit_vektor = embedding_service.encode_one(tekst_upita)
@@ -231,9 +219,9 @@ def hibridna_pretraga_po_naslovu_i_opisu(
         param={"metric_type": "COSINE", "params": {"nprobe": NPROBE}}, limit=top_k
     )
     request_opis = AnnSearchRequest(
-        data=[upit_vektor], anns_field="opis_vector",
-        param={"metric_type": "COSINE", "params": {"nprobe": NPROBE}}, limit=top_k
-    )
+            data=[upit_vektor], anns_field="opis_vector",
+            param={"metric_type": "COSINE", "params": {"nprobe": NPROBE}}, limit=top_k
+        )
     
     client = milvus_service.client
     result = client.hybrid_search(

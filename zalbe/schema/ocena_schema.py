@@ -4,7 +4,7 @@ from config import EMBEDDING_DIM, NLIST
 
 
 def ocena_schema(client: MilvusClient):
-    """Definiše šemu kolekcije ocene_resavanja."""
+    """Definiše šemu"""
     schema = client.create_schema(
         auto_id=False,
         enable_dynamic_fields=False,
@@ -25,7 +25,7 @@ def ocena_schema(client: MilvusClient):
 
 
 def ocena_index_params(client: MilvusClient):
-    """Definiše indekse za kolekciju ocene_resavanja."""
+    """Definiše indekse"""
     idx = client.prepare_index_params()
 
     idx.add_index("ocena_id")
