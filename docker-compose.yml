@@ -257,10 +257,10 @@ services:
     container_name: analiza-zalbi
     restart: on-failure
     environment:
-      CASSANDRA_HOST: cassandra-db
+      CASSANDRA_HOST: cassandradb
       CASSANDRA_PORT: 9042
       CASSANDRA_KEYSPACE: zalbe_keyspace
-      REDIS_HOST: redis-db
+      REDIS_HOST: redisdb
       REDIS_PORT: 6379
       APP_PORT: 8000
     ports:

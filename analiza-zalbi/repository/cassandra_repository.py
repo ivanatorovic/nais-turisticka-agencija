@@ -1,10 +1,6 @@
 import os
 from cassandra.cluster import Cluster
-from repository.redis_repository import (
-    save_zalba_to_cache,
-    get_zalba_from_cache,
-    delete_zalba_from_cache
-)
+
 CASSANDRA_HOST = os.getenv("CASSANDRA_HOST", "cassandradb")
 CASSANDRA_PORT = int(os.getenv("CASSANDRA_PORT", "9042"))
 KEYSPACE = os.getenv("CASSANDRA_KEYSPACE", "zalbe_keyspace")
@@ -20,56 +16,36 @@ def create_zalba_cassandra(zalba):
         INSERT INTO complaints_by_id
         (zalba_id, naslov, opis, kategorija, tim, prioritet, id_ture)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
-    """, (
-        data["zalba_id"], data["naslov"], data["opis"],
-        data["kategorija"], data["tim"], data["prioritet"], data["id_ture"]
-    ))
+    """, (data["zalba_id"], data["naslov"], data["opis"], data["kategorija"], data["tim"], data["prioritet"], data["id_ture"]))
 
     session.execute("""
         INSERT INTO complaints_by_category
         (kategorija, zalba_id, naslov, opis, tim, prioritet, id_ture)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
-    """, (
-        data["kategorija"], data["zalba_id"], data["naslov"],
-        data["opis"], data["tim"], data["prioritet"], data["id_ture"]
-    ))
+    """, (data["kategorija"], data["zalba_id"], data["naslov"], data["opis"], data["tim"], data["prioritet"], data["id_ture"]))
 
     session.execute("""
         INSERT INTO complaints_by_team
         (tim, zalba_id, naslov, opis, kategorija, prioritet, id_ture)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
-    """, (
-        data["tim"], data["zalba_id"], data["naslov"],
-        data["opis"], data["kategorija"], data["prioritet"], data["id_ture"]
-    ))
+    """, (data["tim"], data["zalba_id"], data["naslov"], data["opis"], data["kategorija"], data["prioritet"], data["id_ture"]))
 
     session.execute("""
         INSERT INTO complaints_by_priority
         (prioritet, zalba_id, naslov, opis, kategorija, tim, id_ture)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
-    """, (
-        data["prioritet"], data["zalba_id"], data["naslov"],
-        data["opis"], data["kategorija"], data["tim"], data["id_ture"]
-    ))
+    """, (data["prioritet"], data["zalba_id"], data["naslov"], data["opis"], data["kategorija"], data["tim"], data["id_ture"]))
 
     session.execute("""
         INSERT INTO complaints_by_tour
         (id_ture, zalba_id, naslov, opis, kategorija, tim, prioritet)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
-    """, (
-        data["id_ture"], data["zalba_id"], data["naslov"],
-        data["opis"], data["kategorija"], data["tim"], data["prioritet"]
-    ))
+    """, (data["id_ture"], data["zalba_id"], data["naslov"], data["opis"], data["kategorija"], data["tim"], data["prioritet"]))
 
-    save_zalba_to_cache(data["zalba_id"], data)
     return data
 
 
 def get_zalba_by_id_cassandra(zalba_id: int):
-    cached = get_zalba_from_cache(zalba_id)
-    if cached is not None:
-        return cached
-
     row = session.execute(
         "SELECT * FROM complaints_by_id WHERE zalba_id = %s",
         (zalba_id,)
@@ -78,9 +54,7 @@ def get_zalba_by_id_cassandra(zalba_id: int):
     if row is None:
         return None
 
-    result = dict(row._asdict())
-    save_zalba_to_cache(zalba_id, result)
-    return result
+    return dict(row._asdict())
 
 
 def get_zalbe_by_category_cassandra(kategorija: str):
@@ -114,6 +88,7 @@ def get_zalbe_by_tour_cassandra(id_ture: int):
     )
     return [dict(row._asdict()) for row in rows]
 
+
 def update_zalba_cassandra(zalba_id: int, data: dict):
     old = get_zalba_by_id_cassandra(zalba_id)
     if old is None:
@@ -129,7 +104,6 @@ def update_zalba_cassandra(zalba_id: int, data: dict):
     return create_zalba_cassandra(Obj())
 
 
-
 def delete_zalba_cassandra(zalba_id: int):
     old = get_zalba_by_id_cassandra(zalba_id)
     if old is None:
@@ -141,7 +115,6 @@ def delete_zalba_cassandra(zalba_id: int):
     session.execute("DELETE FROM complaints_by_priority WHERE prioritet = %s AND zalba_id = %s", (old["prioritet"], zalba_id))
     session.execute("DELETE FROM complaints_by_tour WHERE id_ture = %s AND zalba_id = %s", (old["id_ture"], zalba_id))
 
-    delete_zalba_from_cache(zalba_id)
     return True
 
 

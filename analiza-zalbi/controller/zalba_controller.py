@@ -2,18 +2,18 @@ from fastapi import APIRouter, HTTPException
 
 from model.zalba_model import ZalbaCreate, ZalbaUpdate, ZalbaResponse
 
-from repository.cassandra_repository import (
-    create_zalba_cassandra,
-    get_zalba_by_id_cassandra,
-    get_zalbe_by_category_cassandra,
-    get_zalbe_by_team_cassandra,
-    get_zalbe_by_priority_cassandra,
-    get_zalbe_by_tour_cassandra,
-    update_zalba_cassandra,
-    delete_zalba_cassandra,
-    count_by_category_cassandra,
-    count_by_team_cassandra,
-    count_by_priority_cassandra,
+from service.zalba_service import (
+    create_zalba_service,
+    get_zalba_by_id_service,
+    get_zalbe_by_category_service,
+    get_zalbe_by_team_service,
+    get_zalbe_by_priority_service,
+    get_zalbe_by_tour_service,
+    update_zalba_service,
+    delete_zalba_service,
+    count_by_category_service,
+    count_by_team_service,
+    count_by_priority_service,
 )
 
 router = APIRouter(prefix="/zalbe", tags=["Analiza žalbi"])
@@ -21,12 +21,12 @@ router = APIRouter(prefix="/zalbe", tags=["Analiza žalbi"])
 
 @router.post("/", response_model=ZalbaResponse)
 def create_zalba(zalba: ZalbaCreate):
-    return create_zalba_cassandra(zalba)
+    return create_zalba_service(zalba)
 
 
 @router.get("/{zalba_id}")
 def get_zalba(zalba_id: int):
-    result = get_zalba_by_id_cassandra(zalba_id)
+    result = get_zalba_by_id_service(zalba_id)
     if result is None:
         raise HTTPException(status_code=404, detail="Žalba nije pronađena")
     return result
@@ -34,27 +34,27 @@ def get_zalba(zalba_id: int):
 
 @router.get("/kategorija/{kategorija}")
 def get_by_category(kategorija: str):
-    return get_zalbe_by_category_cassandra(kategorija)
+    return get_zalbe_by_category_service(kategorija)
 
 
 @router.get("/tim/{tim}")
 def get_by_team(tim: str):
-    return get_zalbe_by_team_cassandra(tim)
+    return get_zalbe_by_team_service(tim)
 
 
 @router.get("/prioritet/{prioritet}")
 def get_by_priority(prioritet: int):
-    return get_zalbe_by_priority_cassandra(prioritet)
+    return get_zalbe_by_priority_service(prioritet)
 
 
 @router.get("/tura/{id_ture}")
 def get_by_tour(id_ture: int):
-    return get_zalbe_by_tour_cassandra(id_ture)
+    return get_zalbe_by_tour_service(id_ture)
 
 
 @router.put("/{zalba_id}")
 def update_zalba(zalba_id: int, zalba: ZalbaUpdate):
-    result = update_zalba_cassandra(zalba_id, zalba.model_dump())
+    result = update_zalba_service(zalba_id, zalba)
     if result is None:
         raise HTTPException(status_code=404, detail="Žalba nije pronađena")
     return result
@@ -62,7 +62,7 @@ def update_zalba(zalba_id: int, zalba: ZalbaUpdate):
 
 @router.delete("/{zalba_id}")
 def delete_zalba(zalba_id: int):
-    deleted = delete_zalba_cassandra(zalba_id)
+    deleted = delete_zalba_service(zalba_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Žalba nije pronađena")
     return {"message": "Žalba uspešno obrisana"}
@@ -70,14 +70,14 @@ def delete_zalba(zalba_id: int):
 
 @router.get("/count/kategorija/{kategorija}")
 def count_by_category(kategorija: str):
-    return count_by_category_cassandra(kategorija)
+    return count_by_category_service(kategorija)
 
 
 @router.get("/count/tim/{tim}")
 def count_by_team(tim: str):
-    return count_by_team_cassandra(tim)
+    return count_by_team_service(tim)
 
 
 @router.get("/count/prioritet/{prioritet}")
 def count_by_priority(prioritet: int):
-    return count_by_priority_cassandra(prioritet)
+    return count_by_priority_service(prioritet)
