@@ -57,7 +57,7 @@ def get_ocene_by_filter(filter_expr: str, limit: int = 100) -> list[dict]:
 
 
 def count_ocene(filter_expr: str = "") -> int:
-    """Prebrojava ocene."""
+    
     client = milvus_service.client
     if filter_expr:
         result = client.query(
@@ -71,7 +71,6 @@ def count_ocene(filter_expr: str = "") -> int:
 
 
 def update_ocena(ocena_id: int, nova_polja: dict) -> dict:
-    """Ažurira postojeću ocenu."""
     trenutna = get_ocena_by_id(ocena_id)
     if not trenutna:
         return {"status": "error", "message": f"Ocena ID={ocena_id} ne postoji"}
@@ -87,7 +86,6 @@ def update_ocena(ocena_id: int, nova_polja: dict) -> dict:
 
 
 def delete_ocena(ocena_id: int) -> dict:
-    """Briše ocenu po ID-u."""
     client = milvus_service.client
     client.delete(
         collection_name=OCENE_COLLECTION,
@@ -98,7 +96,6 @@ def delete_ocena(ocena_id: int) -> dict:
 
 
 def delete_ocene_by_filter(filter_expr: str) -> dict:
-    """Briše ocene po filteru."""
     client = milvus_service.client
     result = client.delete(
         collection_name=OCENE_COLLECTION,
@@ -110,7 +107,6 @@ def delete_ocene_by_filter(filter_expr: str) -> dict:
 
 
 def prebroj_ocene_po_uslovu(filter_expr: str) -> int:
-   
     logger.info("Prebrojavam ocene po uslovu: %s", filter_expr)
     client = milvus_service.client
     result = client.query(

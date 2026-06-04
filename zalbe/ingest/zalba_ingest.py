@@ -16,11 +16,9 @@ from services.embedding_service import embedding_service
 logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)-8s %(message)s")
 logger = logging.getLogger(__name__)
 
-# ============================================================
+
 # ŠABLONI ZA GENERISANJE ŽALBI
 # Svaka kategorija ima tim koji je rešava i listu tipičnih problema
-# ============================================================
-
 ZALBE_SABLONI = {
     "smestaj": {
         "tim": "Tim za smestaj",

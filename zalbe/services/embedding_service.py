@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 class EmbeddingService:
-    """Singleton servis za generisanje embeddinga."""
 
     def __init__(self):
         logger.info("Učitavanje embedding modela: %s", EMBEDDING_MODEL_NAME)
@@ -15,10 +14,7 @@ class EmbeddingService:
         logger.info("Model učitan (dimenzija: %d).", EMBEDDING_DIM)
 
     def encode(self, texts: list[str]) -> list[list[float]]:
-        """
-        Pretvara listu stringova u listu vektora.
-        Svaki vektor ima dimenziju EMBEDDING_DIM (384).
-        """
+       
         if not texts:
             return []
         embeddings = self.model.encode(
@@ -26,7 +22,7 @@ class EmbeddingService:
             normalize_embeddings=True,  # L2 normalizacija za cosine sličnost
             show_progress_bar=False
         )
-        # Vraćamo kao običnu Python listu (Milvus ne voli numpy nizove)
+        
         return embeddings.tolist()
 
     def encode_one(self, text: str) -> list[float]:

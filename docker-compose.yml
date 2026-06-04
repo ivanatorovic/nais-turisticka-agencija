@@ -198,7 +198,7 @@ services:
       MILVUS_PORT: 19530
       APP_PORT: 8000
     ports:
-      - "8000:8000"
+      - "8005:8000"
     depends_on:
       - standalone
     networks:
@@ -228,15 +228,75 @@ services:
     networks:
       - mynetwork
 
-
-
-  sales-cassandra:
-    image: cassandra:latest
-    container_name: sales-cassandra
+  analiza-aktivnosti:
+    build:
+      context: ./analiza-aktivnosti
+      dockerfile: Dockerfile
+    image: analiza-aktivnosti:latest
+    container_name: analiza-aktivnosti
+    restart: on-failure
+    depends_on:
+      - eureka-service
+      - cassandradb
+      - redisdb
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-service:8761/eureka/
+      SPRING_CASSANDRA_CONTACT_POINTS: cassandradb
+      SPRING_CASSANDRA_PORT: 9042
+      SPRING_CASSANDRA_KEYSPACE_NAME: nais
+      SPRING_CASSANDRA_LOCAL_DATACENTER: datacenter1
+      SPRING_CASSANDRA_SCHEMA_ACTION: CREATE_IF_NOT_EXISTS
+      REDIS_HOST: redisdb
+      REDIS_PORT: 6379
     ports:
-      - "9042:9042"
+      - "8085:8085"
+    networks:
+      - mynetwork
+
+  analiza-zalbi:
+    build:
+      context: ./analiza-zalbi
+      dockerfile: Dockerfile
+    image: analiza-zalbi:latest
+    container_name: analiza-zalbi
+    restart: on-failure
+    environment:
+      CASSANDRA_HOST: cassandra-db
+      CASSANDRA_PORT: 9042
+      CASSANDRA_KEYSPACE: zalbe_keyspace
+      REDIS_HOST: redis-db
+      REDIS_PORT: 6379
+      APP_PORT: 8000
+    ports:
+      - "8006:8000"
+    networks:
+      - mynetwork
+
+  redisdb:
+    image: redis:7
+    container_name: redisdb
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mynetwork
+
+  cassandradb:
+    image: cassandra:4
+    container_name: cassandradb
+    ports:
+      - "9043:9042"
     volumes:
-      - sales_cassandra_data:/var/lib/cassandra
+      - cassandra_data:/var/lib/cassandra
+    healthcheck:
+      test: [ "CMD-SHELL", "nodetool status | grep UN" ]
+      interval: 30s
+      timeout: 10s
+      retries: 10
     networks:
       - mynetwork
 
@@ -245,7 +305,7 @@ volumes:
   ollama_data:
   recommendation_data:
   workflow_data:
-  sales_cassandra_data:
+  cassandra_data:
 
 networks:
   mynetwork:

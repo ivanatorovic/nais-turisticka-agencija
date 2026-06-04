@@ -1,10 +1,4 @@
-"""
-Ingest skripta za kolekciju 'ocene_resavanja'.
-Kreira kolekciju i unosi 250 test ocena sa komentarima.
-Pokretanje:
-    python -m ingest.ocena_ingest
-    python -m ingest.ocena_ingest --reset   (briše i ponovo kreira)
-"""
+
 import argparse
 import logging
 import random
