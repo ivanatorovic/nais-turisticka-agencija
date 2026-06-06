@@ -253,6 +253,31 @@ services:
     networks:
       - mynetwork
 
+
+  analiza-prodaje:
+    build:
+      context: ./analiza-prodaje
+      dockerfile: Dockerfile
+    image: analiza-prodaje:latest
+    container_name: analiza-prodaje
+    restart: on-failure
+    depends_on:
+      - eureka-service
+      - cassandradb
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-service:8761/eureka/
+      SPRING_CASSANDRA_CONTACT_POINTS: cassandradb
+      SPRING_CASSANDRA_PORT: 9042
+      SPRING_CASSANDRA_KEYSPACE_NAME: analiza_prodaje
+      SPRING_CASSANDRA_LOCAL_DATACENTER: datacenter1
+      SPRING_CASSANDRA_SCHEMA_ACTION: CREATE_IF_NOT_EXISTS
+    ports:
+      - "8086:8086"
+    networks:
+      - mynetwork
+
+
+
   analiza-zalbi:
     build:
       context: ./analiza-zalbi
