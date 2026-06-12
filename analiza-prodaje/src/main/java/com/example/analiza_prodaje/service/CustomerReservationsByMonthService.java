@@ -4,6 +4,9 @@ import com.example.analiza_prodaje.dto.CustomerReservationsByMonthDto;
 import com.example.analiza_prodaje.dto.CustomerRevenueByMonthDto;
 import com.example.analiza_prodaje.model.CustomerReservationsByMonth;
 import com.example.analiza_prodaje.repository.CustomerReservationsByMonthRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,6 +21,10 @@ public class CustomerReservationsByMonthService {
         this.repository = repository;
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "customerRevenueInMonth", key = "#dto.customerId + '_' + #dto.month"),
+            @CacheEvict(value = "customerRevenueByMonth", key = "#dto.customerId")
+    })
     public CustomerReservationsByMonth create(CustomerReservationsByMonthDto dto) {
         CustomerReservationsByMonth reservation = mapToEntity(dto);
         return repository.save(reservation);
@@ -27,14 +34,25 @@ public class CustomerReservationsByMonthService {
         return repository.findByCustomerId(customerId);
     }
 
-    public List<CustomerReservationsByMonth> findByCustomerIdAndMonth(Long customerId, String month) {
+    public List<CustomerReservationsByMonth> findByCustomerIdAndMonth(
+            Long customerId,
+            String month
+    ) {
         return repository.findByCustomerIdAndMonth(customerId, month);
     }
 
-    public CustomerReservationsByMonth findOne(Long customerId, String month, Long reservationId) {
+    public CustomerReservationsByMonth findOne(
+            Long customerId,
+            String month,
+            Long reservationId
+    ) {
         return repository.findOne(customerId, month, reservationId);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "customerRevenueInMonth", key = "#customerId + '_' + #month"),
+            @CacheEvict(value = "customerRevenueByMonth", key = "#customerId")
+    })
     public CustomerReservationsByMonth patch(
             Long customerId,
             String month,
@@ -79,6 +97,10 @@ public class CustomerReservationsByMonthService {
         return repository.save(existing);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "customerRevenueInMonth", key = "#customerId + '_' + #month"),
+            @CacheEvict(value = "customerRevenueByMonth", key = "#customerId")
+    })
     public CustomerReservationsByMonth update(
             Long customerId,
             String month,
@@ -103,12 +125,30 @@ public class CustomerReservationsByMonthService {
         return repository.save(existing);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "customerRevenueInMonth", key = "#customerId + '_' + #month"),
+            @CacheEvict(value = "customerRevenueByMonth", key = "#customerId")
+    })
     public void delete(Long customerId, String month, Long reservationId) {
         repository.deleteOne(customerId, month, reservationId);
     }
 
+    @Cacheable(value = "customerRevenueInMonth", key = "#customerId + '_' + #month")
     public BigDecimal totalRevenueForCustomerInMonth(Long customerId, String month) {
-        return repository.totalRevenueForCustomerInMonth(customerId, month);
+        BigDecimal result = repository.totalRevenueForCustomerInMonth(customerId, month);
+        return result == null ? BigDecimal.ZERO : result;
+    }
+
+    @Cacheable(value = "customerRevenueByMonth", key = "#customerId")
+    public List<CustomerRevenueByMonthDto> revenueByCustomerGroupedByMonth(Long customerId) {
+        return repository.revenueByCustomerGroupedByMonth(customerId)
+                .stream()
+                .map(r -> new CustomerRevenueByMonthDto(
+                        r.getCustomerId(),
+                        r.getMonth(),
+                        r.getTotalPrice()
+                ))
+                .toList();
     }
 
     private CustomerReservationsByMonth mapToEntity(CustomerReservationsByMonthDto dto) {
@@ -126,17 +166,5 @@ public class CustomerReservationsByMonthService {
         reservation.setTotalPrice(dto.getTotalPrice());
 
         return reservation;
-    }
-
-    public List<CustomerRevenueByMonthDto> revenueByCustomerGroupedByMonth(Long customerId) {
-
-        return repository.revenueByCustomerGroupedByMonth(customerId)
-                .stream()
-                .map(r -> new CustomerRevenueByMonthDto(
-                        r.getCustomerId(),
-                        r.getMonth(),
-                        r.getTotalPrice()
-                ))
-                .toList();
     }
 }

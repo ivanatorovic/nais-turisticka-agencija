@@ -1,10 +1,13 @@
 package com.example.analiza_prodaje.service;
 
+import com.example.analiza_prodaje.dto.TermPeopleDto;
+import com.example.analiza_prodaje.dto.TermRevenueDto;
 import com.example.analiza_prodaje.model.ArrangementTermRevenue;
 import com.example.analiza_prodaje.repository.ArrangementTermRevenueRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
-import com.example.analiza_prodaje.dto.TermRevenueDto;
-import com.example.analiza_prodaje.dto.TermPeopleDto;
 
 import java.util.List;
 
@@ -17,6 +20,10 @@ public class ArrangementTermRevenueService {
         this.repository = repository;
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "arrangementTermRevenue", key = "#revenue.arrangementId"),
+            @CacheEvict(value = "arrangementTermPeople", key = "#revenue.arrangementId")
+    })
     public ArrangementTermRevenue create(ArrangementTermRevenue revenue) {
         return repository.save(revenue);
     }
@@ -25,10 +32,18 @@ public class ArrangementTermRevenueService {
         return repository.findByArrangementId(arrangementId);
     }
 
-    public ArrangementTermRevenue getOne(Long arrangementId, Long termId, Long reservationId) {
+    public ArrangementTermRevenue getOne(
+            Long arrangementId,
+            Long termId,
+            Long reservationId
+    ) {
         return repository.findOne(arrangementId, termId, reservationId);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "arrangementTermRevenue", key = "#arrangementId"),
+            @CacheEvict(value = "arrangementTermPeople", key = "#arrangementId")
+    })
     public ArrangementTermRevenue update(
             Long arrangementId,
             Long termId,
@@ -73,12 +88,16 @@ public class ArrangementTermRevenueService {
         return repository.save(existingRevenue);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "arrangementTermRevenue", key = "#arrangementId"),
+            @CacheEvict(value = "arrangementTermPeople", key = "#arrangementId")
+    })
     public void delete(Long arrangementId, Long termId, Long reservationId) {
         repository.deleteOne(arrangementId, termId, reservationId);
     }
 
+    @Cacheable(value = "arrangementTermRevenue", key = "#arrangementId")
     public List<TermRevenueDto> getRevenueByArrangement(Long arrangementId) {
-
         return repository.revenueByArrangement(arrangementId)
                 .stream()
                 .map(revenue -> new TermRevenueDto(
@@ -89,8 +108,8 @@ public class ArrangementTermRevenueService {
                 .toList();
     }
 
+    @Cacheable(value = "arrangementTermPeople", key = "#arrangementId")
     public List<TermPeopleDto> getTotalPeopleByTerm(Long arrangementId) {
-
         return repository.totalPeopleByTerm(arrangementId)
                 .stream()
                 .map(item -> new TermPeopleDto(

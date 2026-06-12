@@ -1,6 +1,10 @@
 package com.example.analiza_prodaje.dto;
 
-public class TermPeopleDto {
+import java.io.Serializable;
+
+public class TermPeopleDto implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Long arrangementId;
     private Long termId;

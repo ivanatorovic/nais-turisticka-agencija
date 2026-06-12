@@ -3,6 +3,8 @@ package com.example.analiza_prodaje.service;
 import com.example.analiza_prodaje.dto.DestinationRevenueDto;
 import com.example.analiza_prodaje.model.DestinationSalesByMonth;
 import com.example.analiza_prodaje.repository.DestinationSalesByMonthRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +18,7 @@ public class DestinationSalesByMonthService {
         this.repository = repository;
     }
 
+    @CacheEvict(value = "destinationRevenue", key = "#sale.month")
     public DestinationSalesByMonth create(DestinationSalesByMonth sale) {
         return repository.save(sale);
     }
@@ -24,17 +27,23 @@ public class DestinationSalesByMonthService {
         return repository.findByMonth(month);
     }
 
-    public DestinationSalesByMonth getOne(String month, String destination, Long reservationId) {
+    public DestinationSalesByMonth getOne(
+            String month,
+            String destination,
+            Long reservationId
+    ) {
         return repository.findOne(month, destination, reservationId);
     }
 
+    @CacheEvict(value = "destinationRevenue", key = "#month")
     public DestinationSalesByMonth update(
             String month,
             String destination,
             Long reservationId,
             DestinationSalesByMonth updated
     ) {
-        DestinationSalesByMonth existing = repository.findOne(month, destination, reservationId);
+        DestinationSalesByMonth existing =
+                repository.findOne(month, destination, reservationId);
 
         if (existing == null) {
             return null;
@@ -67,10 +76,12 @@ public class DestinationSalesByMonthService {
         return repository.save(existing);
     }
 
+    @CacheEvict(value = "destinationRevenue", key = "#month")
     public void delete(String month, String destination, Long reservationId) {
         repository.deleteOne(month, destination, reservationId);
     }
 
+    @Cacheable(value = "destinationRevenue", key = "#month")
     public List<DestinationRevenueDto> getRevenueByDestination(String month) {
         return repository.revenueByDestination(month)
                 .stream()

@@ -1,8 +1,11 @@
 package com.example.analiza_prodaje.dto;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class DestinationRevenueDto {
+public class DestinationRevenueDto implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String destination;
     private BigDecimal totalRevenue;

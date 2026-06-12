@@ -1,8 +1,11 @@
 package com.example.analiza_prodaje.dto;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class CustomerRevenueByMonthDto {
+public class CustomerRevenueByMonthDto implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Long customerId;
     private String month;
@@ -14,7 +17,8 @@ public class CustomerRevenueByMonthDto {
     public CustomerRevenueByMonthDto(
             Long customerId,
             String month,
-            BigDecimal totalRevenue) {
+            BigDecimal totalRevenue
+    ) {
         this.customerId = customerId;
         this.month = month;
         this.totalRevenue = totalRevenue;

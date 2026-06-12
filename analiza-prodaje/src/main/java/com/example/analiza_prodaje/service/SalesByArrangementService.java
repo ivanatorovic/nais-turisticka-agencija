@@ -2,6 +2,8 @@ package com.example.analiza_prodaje.service;
 
 import com.example.analiza_prodaje.model.SalesByArrangement;
 import com.example.analiza_prodaje.repository.SalesByArrangementRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,6 +18,7 @@ public class SalesByArrangementService {
         this.repository = repository;
     }
 
+    @CacheEvict(value = "salesByArrangementRevenue", key = "#sale.arrangementId")
     public SalesByArrangement create(SalesByArrangement sale) {
         return repository.save(sale);
     }
@@ -28,8 +31,14 @@ public class SalesByArrangementService {
         return repository.findOne(arrangementId, reservationId);
     }
 
-    public SalesByArrangement update(Long arrangementId, Long reservationId, SalesByArrangement updatedSale) {
-        SalesByArrangement existingSale = repository.findOne(arrangementId, reservationId);
+    @CacheEvict(value = "salesByArrangementRevenue", key = "#arrangementId")
+    public SalesByArrangement update(
+            Long arrangementId,
+            Long reservationId,
+            SalesByArrangement updatedSale
+    ) {
+        SalesByArrangement existingSale =
+                repository.findOne(arrangementId, reservationId);
 
         if (existingSale == null) {
             return null;
@@ -66,10 +75,12 @@ public class SalesByArrangementService {
         return repository.save(existingSale);
     }
 
+    @CacheEvict(value = "salesByArrangementRevenue", key = "#arrangementId")
     public void delete(Long arrangementId, Long reservationId) {
         repository.deleteOne(arrangementId, reservationId);
     }
 
+    @Cacheable(value = "salesByArrangementRevenue", key = "#arrangementId")
     public BigDecimal getTotalRevenue(Long arrangementId) {
         BigDecimal total = repository.sumRevenueByArrangement(arrangementId);
         return total != null ? total : BigDecimal.ZERO;
