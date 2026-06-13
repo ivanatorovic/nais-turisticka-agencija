@@ -199,10 +199,19 @@ services:
       MILVUS_HOST: standalone
       MILVUS_PORT: 19530
       APP_PORT: 8000
+
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+
     ports:
       - "8005:8000"
+
     depends_on:
       - standalone
+      - rabbitmq
+
     networks:
       - mynetwork
 
@@ -314,6 +323,25 @@ services:
       retries: 5
     networks:
       - mynetwork
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - mynetwork
+
 
   cassandradb:
     image: cassandra:4

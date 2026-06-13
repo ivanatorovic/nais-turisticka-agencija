@@ -148,6 +148,10 @@ def generisi_zalbe(broj_zalbi: int = 250) -> list[dict]:
             "tim": sablon["tim"],
             "prioritet": random.choices([1, 2], weights=[80, 20])[0],  # 20% hitne
             "id_ture": random.randint(1000, 9999),
+            "aktivnost_id": 0,
+            "putnik_id": 0,
+            "saga_id": "",
+            "saga_status": "NOT_APPLICABLE",
         }
         zalbe.append(zalba)
 
