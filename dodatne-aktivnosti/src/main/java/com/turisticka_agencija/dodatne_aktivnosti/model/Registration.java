@@ -19,6 +19,8 @@ public class Registration {
 
     private LocalDate registrationDate;
     private Integer numberOfPeople;
+    private String complaintStatus = "NORMAL";
+    private Long complaintId;
 
     public Registration() {
     }
@@ -64,5 +66,21 @@ public class Registration {
 
     public void setNumberOfPeople(Integer numberOfPeople) {
         this.numberOfPeople = numberOfPeople;
+    }
+
+    public String getComplaintStatus() {
+        return complaintStatus;
+    }
+
+    public void setComplaintStatus(String complaintStatus) {
+        this.complaintStatus = complaintStatus;
+    }
+
+    public Long getComplaintId() {
+        return complaintId;
+    }
+
+    public void setComplaintId(Long complaintId) {
+        this.complaintId = complaintId;
     }
 }

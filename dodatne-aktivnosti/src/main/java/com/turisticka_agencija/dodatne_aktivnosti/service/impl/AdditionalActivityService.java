@@ -95,6 +95,65 @@ public class AdditionalActivityService implements IAdditionalActivityService {
     }
 
     @Override
+    public void handleComplaintCreated(
+            Long complaintId,
+            Long activityId,
+            Long customerId
+    ) {
+        if (customerId == null) {
+            throw new RuntimeException("Customer ID is missing.");
+        }
+
+        if (activityId == null) {
+            throw new RuntimeException("Activity ID is missing.");
+        }
+
+        if (complaintId == null) {
+            throw new RuntimeException("Complaint ID is missing.");
+        }
+
+        Boolean customerExists =
+                additionalActivityRepository.existsCustomerById(customerId);
+
+        if (!Boolean.TRUE.equals(customerExists)) {
+            throw new RuntimeException("Customer not found with id: " + customerId);
+        }
+
+        Boolean activityExists =
+                additionalActivityRepository.existsActivityById(activityId);
+
+        if (!Boolean.TRUE.equals(activityExists)) {
+            throw new RuntimeException("Activity not found with id: " + activityId);
+        }
+
+        Boolean registrationExists =
+                additionalActivityRepository.existsRegistrationForActivity(
+                        customerId,
+                        activityId
+                );
+
+        if (!Boolean.TRUE.equals(registrationExists)) {
+            throw new RuntimeException(
+                    "Customer " + customerId +
+                            " is not registered for activity " + activityId
+            );
+        }
+
+        Long updated =
+                additionalActivityRepository.registerComplaintForActivity(
+                        customerId,
+                        activityId,
+                        complaintId
+                );
+
+        if (updated == null || updated == 0) {
+            throw new RuntimeException(
+                    "Complaint already registered for this activity registration."
+            );
+        }
+    }
+
+    @Override
     public AdditionalActivity addCategoryToActivity(Long activityId, Long categoryId) {
         AdditionalActivity activity = findById(activityId);
         Category category = categoryRepository.findById(categoryId)

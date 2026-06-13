@@ -17,6 +17,7 @@ public interface IAdditionalActivityService {
 
     AdditionalActivity addArrangementToActivity(Long activityId, Long arrangementId);
     AdditionalActivity removeArrangementFromActivity(Long activityId);
+    void handleComplaintCreated(Long complaintId, Long activityId, Long customerId);
 
     List<AdditionalActivityDTO> recommendActivitiesBySimilarCustomers(Long customerId);
     List<AdditionalActivityDTO> recommendActivitiesByCategory(Long customerId);

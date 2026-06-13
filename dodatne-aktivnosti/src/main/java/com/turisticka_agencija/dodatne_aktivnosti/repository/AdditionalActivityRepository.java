@@ -58,4 +58,32 @@ public interface AdditionalActivityRepository extends Neo4jRepository<Additional
             "RETURN recommendedActivity, partOf, arr " +
             "ORDER BY occupancyRate DESC, registeredPeople DESC")
     List<AdditionalActivity> findPopularActivitiesForCustomer(Long customerId);
+
+    @Query("""
+    MATCH (customer:Customer {customerId: $customerId})-[r:REGISTERED_FOR]->(activity:AdditionalActivity {activityId: $activityId})
+    WHERE r.complaintId IS NULL
+    SET activity.complaintCount = coalesce(activity.complaintCount, 0) + 1,
+        r.complaintStatus = 'COMPLAINT_SUBMITTED',
+        r.complaintId = $complaintId
+    RETURN count(r)
+""")
+    Long registerComplaintForActivity(Long customerId, Long activityId, Long complaintId);
+
+    @Query("""
+    MATCH (customer:Customer {customerId: $customerId})
+    RETURN count(customer) > 0
+""")
+    Boolean existsCustomerById(Long customerId);
+
+    @Query("""
+    MATCH (activity:AdditionalActivity {activityId: $activityId})
+    RETURN count(activity) > 0
+""")
+    Boolean existsActivityById(Long activityId);
+
+    @Query("""
+    MATCH (:Customer {customerId: $customerId})-[r:REGISTERED_FOR]->(:AdditionalActivity {activityId: $activityId})
+    RETURN count(r) > 0
+""")
+    Boolean existsRegistrationForActivity(Long customerId, Long activityId);
 }

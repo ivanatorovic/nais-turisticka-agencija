@@ -20,6 +20,8 @@ public class AdditionalActivity {
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer maxCapacity;
+    private Integer complaintCount = 0;
+
 
     @Relationship(type = "PART_OF")
     private Arrangement arrangement;
@@ -106,5 +108,13 @@ public class AdditionalActivity {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public Integer getComplaintCount() {
+        return complaintCount;
+    }
+
+    public void setComplaintCount(Integer complaintCount) {
+        this.complaintCount = complaintCount;
     }
 }

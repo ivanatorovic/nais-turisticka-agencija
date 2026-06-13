@@ -86,10 +86,17 @@ services:
     depends_on:
       - neo4j-nais
       - eureka-service
+      - rabbitmq
     environment:
       SPRING_NEO4J_URI: bolt://neo4j-nais:7687
       SPRING_NEO4J_AUTHENTICATION_USERNAME: neo4j
       SPRING_NEO4J_AUTHENTICATION_PASSWORD: password
+
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-service:8761/eureka/
     networks:
       - mynetwork
