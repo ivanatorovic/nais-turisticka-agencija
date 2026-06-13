@@ -30,6 +30,7 @@ services:
     networks:
       - mynetwork
 
+
   neo4j:
     image: neo4j
     container_name: neo4j
@@ -50,14 +51,17 @@ services:
     container_name: recommendation-service
     depends_on:
       - neo4j
+      - eureka-service
     ports:
       - "8080:8080"
     environment:
       SPRING_NEO4J_URI: bolt://neo4j:7687
       SPRING_NEO4J_USERNAME: neo4j
       SPRING_NEO4J_PASSWORD: password
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-service:8761/eureka/
     networks:
       - mynetwork
+
 
   neo4j-nais:
     image: neo4j
@@ -89,6 +93,7 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-service:8761/eureka/
     networks:
       - mynetwork
+
 
   etcd:
     container_name: milvus-etcd
@@ -182,6 +187,7 @@ services:
     networks:
       - mynetwork
 
+
   zalbe-service:
     build:
       context: ./zalbe
@@ -249,6 +255,34 @@ services:
     networks:
       - mynetwork
 
+
+  analiza-prodaje:
+    build:
+      context: ./analiza-prodaje
+      dockerfile: Dockerfile
+    image: analiza-prodaje:latest
+    container_name: analiza-prodaje
+    restart: on-failure
+    depends_on:
+      - eureka-service
+      - cassandradb
+      - redisdb
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-service:8761/eureka/
+      SPRING_CASSANDRA_CONTACT_POINTS: cassandradb
+      SPRING_CASSANDRA_PORT: 9042
+      SPRING_CASSANDRA_KEYSPACE_NAME: analiza_prodaje
+      SPRING_CASSANDRA_LOCAL_DATACENTER: datacenter1
+      SPRING_CASSANDRA_SCHEMA_ACTION: CREATE_IF_NOT_EXISTS
+      REDIS_HOST: redisdb
+      REDIS_PORT: 6379
+    ports:
+      - "8086:8086"
+    networks:
+      - mynetwork
+
+
+
   analiza-zalbi:
     build:
       context: ./analiza-zalbi
@@ -296,12 +330,23 @@ services:
     networks:
       - mynetwork
 
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: redis-insight
+    ports:
+      - "5540:5540"
+    volumes:
+      - redis_insight_data:/data
+    networks:
+      - mynetwork
+
 volumes:
   nais_data:
   ollama_data:
   recommendation_data:
   workflow_data:
   cassandra_data:
+  redis_insight_data:
 
 networks:
   mynetwork:

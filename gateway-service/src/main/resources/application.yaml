@@ -32,3 +32,17 @@ spring:
           filters:
             - StripPrefix=1
 
+        - id: analiza-prodaje
+          uri: lb://analiza-prodaje
+          predicates:
+            - Path=/analiza-prodaje/**
+          filters:
+            - StripPrefix=1
+
+        - id: recommendation-service
+          uri: lb://recommendation-service
+          predicates:
+            - Path=/recommendation-service/**
+          filters:
+            - StripPrefix=1
+
