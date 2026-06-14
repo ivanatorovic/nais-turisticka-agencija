@@ -4,7 +4,8 @@ Glavna FastAPI aplikacija za VectorDatabaseService (Zalbe).
 import logging
 import uvicorn
 from fastapi import FastAPI
-
+from threading import Thread
+from messaging.rabbitmq_listener import start_rabbitmq_listener
 from config import APP_HOST, APP_PORT, APP_NAME
 from controller.zalba_controller import router as zalba_router
 from controller.ocena_controller import router as ocena_router
@@ -33,7 +34,18 @@ def root():
         "status": "running",
         "docs": "/docs"
     }
+@app.on_event("startup")
+def pokreni_rabbitmq_listener():
+    listener_thread = Thread(
+        target=start_rabbitmq_listener,
+        daemon=True,
+        name="rabbitmq-listener",
+    )
+    listener_thread.start()
 
+    logger.info(
+        "Pokrenuta pozadinska nit za RabbitMQ listener."
+    )
 
 if __name__ == "__main__":
     logger.info("Pokrećem %s na %s:%d", APP_NAME, APP_HOST, APP_PORT)
