@@ -1,0 +1,10 @@
+apiVersion: 1
+
+datasources:
+  - name: Izvestaj API
+    type: yesoreyeram-infinity-datasource
+    uid: izvestaj-api
+    access: proxy
+    url: http://izvestaj-zalbi:8000
+    isDefault: true
+    editable: true

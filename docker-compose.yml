@@ -374,7 +374,40 @@ services:
       - redis_insight_data:/data
     networks:
       - mynetwork
+  izvestaj-zalbi:
+    build:
+      context: ./izvestaj-zalbi
+    container_name: izvestaj-zalbi
+    ports:
+      - "8007:8000"
+    environment:
+      MILVUS_SERVICE_URL: http://zalbe-service:8000
+      CASSANDRA_SERVICE_URL: http://analiza-zalbi:8000
+    depends_on:
+      - zalbe-service
+      - analiza-zalbi
+    networks:
+      - mynetwork
 
+  grafana:
+    image: grafana/grafana:11.5.2
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_INSTALL_PLUGINS: yesoreyeram-infinity-datasource
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - izvestaj-zalbi
+    networks:
+      - mynetwork
 volumes:
   nais_data:
   ollama_data:
@@ -382,7 +415,7 @@ volumes:
   workflow_data:
   cassandra_data:
   redis_insight_data:
-
+  grafana_data:
 networks:
   mynetwork:
     driver: bridge
