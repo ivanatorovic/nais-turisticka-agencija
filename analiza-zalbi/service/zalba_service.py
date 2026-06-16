@@ -19,9 +19,6 @@ from repository.redis_repository import (
 )
 
 
-# ============================================================
-# CREATE
-# ============================================================
 
 def create_zalba_service(zalba):
     """
@@ -39,9 +36,7 @@ def create_zalba_service(zalba):
     return result
 
 
-# ============================================================
-# READ BY ID — CASSANDRA + REDIS CACHE
-# ============================================================
+
 
 def get_zalba_by_id_service(zalba_id: int):
     """
@@ -67,9 +62,6 @@ def get_zalba_by_id_service(zalba_id: int):
     return result
 
 
-# ============================================================
-# READ — CASSANDRA PRISTUPNI OBRASCI
-# ============================================================
 
 def get_zalbe_by_category_service(
         kategorija: str
@@ -127,9 +119,6 @@ def get_zalbe_by_tour_service(
     )
 
 
-# ============================================================
-# UPDATE
-# ============================================================
 
 def update_zalba_service(
         zalba_id: int,
@@ -156,9 +145,6 @@ def update_zalba_service(
     return result
 
 
-# ============================================================
-# DELETE
-# ============================================================
 
 def delete_zalba_service(
         zalba_id: int
@@ -182,9 +168,6 @@ def delete_zalba_service(
     return deleted
 
 
-# ============================================================
-# AGREGATNI UPITI
-# ============================================================
 
 def count_by_category_service(
         kategorija: str

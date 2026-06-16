@@ -5,9 +5,7 @@ from typing import Any
 from cassandra.cluster import Cluster
 
 
-# ============================================================
-# CASSANDRA KONFIGURACIJA I KONEKCIJA
-# ============================================================
+
 
 CASSANDRA_HOST = os.getenv(
     "CASSANDRA_HOST",
@@ -35,9 +33,7 @@ cluster = Cluster(
 session = cluster.connect(KEYSPACE)
 
 
-# ============================================================
-# POMOĆNE FUNKCIJE
-# ============================================================
+
 
 def row_to_dict(row) -> dict | None:
     """
@@ -80,9 +76,7 @@ def extract_zalba_data(zalba: Any) -> dict:
     )
 
 
-# ============================================================
-# CREATE
-# ============================================================
+
 
 def create_zalba_cassandra(zalba) -> dict:
     """
@@ -226,9 +220,6 @@ def create_zalba_cassandra(zalba) -> dict:
     return data
 
 
-# ============================================================
-# READ BY ID
-# ============================================================
 
 def get_zalba_by_id_cassandra(
         zalba_id: int
@@ -249,9 +240,6 @@ def get_zalba_by_id_cassandra(
     return row_to_dict(row)
 
 
-# ============================================================
-# READ BY CATEGORY
-# ============================================================
 
 def get_zalbe_by_category_cassandra(
         kategorija: str
@@ -272,10 +260,6 @@ def get_zalbe_by_category_cassandra(
     return rows_to_dict_list(rows)
 
 
-# ============================================================
-# READ BY TEAM
-# Koristi se i za prostu sekciju generatora izveštaja.
-# ============================================================
 
 def get_zalbe_by_team_cassandra(
         tim: str
@@ -299,9 +283,6 @@ def get_zalbe_by_team_cassandra(
     return rows_to_dict_list(rows)
 
 
-# ============================================================
-# READ BY PRIORITY
-# ============================================================
 
 def get_zalbe_by_priority_cassandra(
         prioritet: int
@@ -326,10 +307,6 @@ def get_zalbe_by_priority_cassandra(
     return rows_to_dict_list(rows)
 
 
-# ============================================================
-# READ BY TOUR
-# ============================================================
-
 def get_zalbe_by_tour_cassandra(
         id_ture: int
 ) -> list[dict]:
@@ -349,9 +326,6 @@ def get_zalbe_by_tour_cassandra(
     return rows_to_dict_list(rows)
 
 
-# ============================================================
-# UPDATE
-# ============================================================
 
 def update_zalba_cassandra(
         zalba_id: int,
@@ -389,9 +363,6 @@ def update_zalba_cassandra(
     )
 
 
-# ============================================================
-# DELETE
-# ============================================================
 
 def delete_zalba_cassandra(
         zalba_id: int
@@ -466,9 +437,6 @@ def delete_zalba_cassandra(
     return True
 
 
-# ============================================================
-# AGREGATNI UPITI
-# ============================================================
 
 def count_by_category_cassandra(
         kategorija: str
