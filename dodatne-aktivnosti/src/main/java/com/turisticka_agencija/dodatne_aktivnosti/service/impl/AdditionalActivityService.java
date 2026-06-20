@@ -139,6 +139,18 @@ public class AdditionalActivityService implements IAdditionalActivityService {
             );
         }
 
+        Boolean complaintAlreadySubmitted =
+                additionalActivityRepository.complaintAlreadySubmitted(
+                        customerId,
+                        activityId
+                );
+
+        if (Boolean.TRUE.equals(complaintAlreadySubmitted)) {
+            throw new RuntimeException(
+                    "Complaint already submitted for this activity registration."
+            );
+        }
+
         Long updated =
                 additionalActivityRepository.registerComplaintForActivity(
                         customerId,

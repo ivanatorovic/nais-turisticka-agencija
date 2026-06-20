@@ -7,20 +7,31 @@ import java.util.List;
 
 public interface IAdditionalActivityService {
     List<AdditionalActivity> findAll();
+
     AdditionalActivity findById(Long id);
+
     AdditionalActivity save(AdditionalActivity activity);
+
     AdditionalActivity update(Long id, AdditionalActivity activity);
+
     void delete(Long id);
 
     AdditionalActivity addCategoryToActivity(Long activityId, Long categoryId);
+
     AdditionalActivity removeCategoryFromActivity(Long activityId);
 
     AdditionalActivity addArrangementToActivity(Long activityId, Long arrangementId);
+
     AdditionalActivity removeArrangementFromActivity(Long activityId);
+
     void handleComplaintCreated(Long complaintId, Long activityId, Long customerId);
 
     List<AdditionalActivityDTO> recommendActivitiesBySimilarCustomers(Long customerId);
+
     List<AdditionalActivityDTO> recommendActivitiesByCategory(Long customerId);
+
     List<AdditionalActivityDTO> findAffordableActivitiesForCustomer(Long customerId);
+
     List<AdditionalActivityDTO> findPopularActivitiesForCustomer(Long customerId);
+
 }

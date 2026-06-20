@@ -406,6 +406,8 @@ services:
       - ./grafana/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - izvestaj-zalbi
+      - dodatne-aktivnosti-service
+      - analiza-aktivnosti
     networks:
       - mynetwork
 volumes:

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/registrations-by-status")
@@ -94,5 +95,14 @@ public class RegistrationByStatusController {
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reports/registrations")
+    public List<RegistrationByStatus> registrationsByStatus(
+            @RequestParam String status,
+            @RequestParam LocalDate from,
+            @RequestParam LocalDate to
+    ) {
+        return service.getByStatusAndDateRange(status, from, to);
     }
 }

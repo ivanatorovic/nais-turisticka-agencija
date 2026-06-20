@@ -2,10 +2,14 @@ package com.example.analiza_aktivnosti.controller;
 
 import com.example.analiza_aktivnosti.dto.ActivityAverageOccupancyDto;
 import com.example.analiza_aktivnosti.entity.ActivityOccupancyByExecution;
+import com.example.analiza_aktivnosti.entity.RegistrationByStatus;
 import com.example.analiza_aktivnosti.service.ActivityOccupancyByExecutionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/activity-occupancy")

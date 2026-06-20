@@ -29,6 +29,14 @@ public class RegistrationByStatusService {
         return repository.save(registration);
     }
 
+    public List<RegistrationByStatus> getByStatusAndDateRange(
+            String status,
+            LocalDate from,
+            LocalDate to
+    ) {
+        return repository.findByStatusAndDateRange(status, from, to);
+    }
+
     public List<RegistrationByStatus> getAll() {
         return repository.findAll();
     }

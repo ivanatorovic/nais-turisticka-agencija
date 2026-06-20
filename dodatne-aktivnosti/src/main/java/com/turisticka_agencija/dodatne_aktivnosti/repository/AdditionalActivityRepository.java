@@ -86,4 +86,13 @@ public interface AdditionalActivityRepository extends Neo4jRepository<Additional
     RETURN count(r) > 0
 """)
     Boolean existsRegistrationForActivity(Long customerId, Long activityId);
+
+    @Query("""
+MATCH (:Customer {customerId: $customerId})-[r:REGISTERED_FOR]->(:AdditionalActivity {activityId: $activityId})
+WHERE r.complaintStatus = 'COMPLAINT_SUBMITTED'
+   OR r.complaintId IS NOT NULL
+RETURN count(r) > 0
+""")
+    Boolean complaintAlreadySubmitted(Long customerId, Long activityId);
+
 }
