@@ -232,13 +232,12 @@ public class AdditionalActivityService implements IAdditionalActivityService {
     }
 
     private AdditionalActivityDTO mapToDTO(AdditionalActivity activity) {
-        ArrangementDTO arrangementDTO = null;
+        Long arrangementId = null;
+        String arrangementName = null;
 
         if (activity.getArrangement() != null) {
-            arrangementDTO = new ArrangementDTO(
-                    activity.getArrangement().getArrangementId(),
-                    activity.getArrangement().getName()
-            );
+            arrangementId = activity.getArrangement().getArrangementId();
+            arrangementName = activity.getArrangement().getName();
         }
 
         return new AdditionalActivityDTO(
@@ -250,7 +249,8 @@ public class AdditionalActivityService implements IAdditionalActivityService {
                 activity.getStartDate(),
                 activity.getEndDate(),
                 activity.getMaxCapacity(),
-                arrangementDTO
+                arrangementId,
+                arrangementName
         );
     }
 }

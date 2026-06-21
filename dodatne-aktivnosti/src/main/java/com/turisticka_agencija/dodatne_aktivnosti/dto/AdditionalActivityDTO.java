@@ -13,13 +13,15 @@ public class AdditionalActivityDTO {
     private LocalDate endDate;
     private Integer maxCapacity;
 
-    private ArrangementDTO arrangement;
+    private Long arrangementId;
+    private String arrangementName;
 
     public AdditionalActivityDTO(Long id, String name, String description,
                                  Double price, String location,
                                  LocalDate startDate, LocalDate endDate,
                                  Integer maxCapacity,
-                                 ArrangementDTO arrangement) {
+                                 Long arrangementId,
+                                 String arrangementName) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -28,42 +30,27 @@ public class AdditionalActivityDTO {
         this.startDate = startDate;
         this.endDate = endDate;
         this.maxCapacity = maxCapacity;
-        this.arrangement = arrangement;
+        this.arrangementId = arrangementId;
+        this.arrangementName = arrangementName;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
 
-    public String getDescription() {
-        return description;
-    }
+    public String getDescription() { return description; }
 
-    public Double getPrice() {
-        return price;
-    }
+    public Double getPrice() { return price; }
 
-    public String getLocation() {
-        return location;
-    }
+    public String getLocation() { return location; }
 
-    public LocalDate getStartDate() {
-        return startDate;
-    }
+    public LocalDate getStartDate() { return startDate; }
 
-    public LocalDate getEndDate() {
-        return endDate;
-    }
+    public LocalDate getEndDate() { return endDate; }
 
-    public Integer getMaxCapacity() {
-        return maxCapacity;
-    }
+    public Integer getMaxCapacity() { return maxCapacity; }
 
-    public ArrangementDTO getArrangement() {
-        return arrangement;
-    }
+    public Long getArrangementId() { return arrangementId; }
+
+    public String getArrangementName() { return arrangementName; }
 }

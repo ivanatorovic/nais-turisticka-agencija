@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ArrangementActivityRevenueService {
@@ -156,7 +158,6 @@ public class ArrangementActivityRevenueService {
 
         return result.stream()
                 .map(item -> {
-
                     String activityName =
                             allActivities.stream()
                                     .filter(x ->
@@ -178,7 +179,7 @@ public class ArrangementActivityRevenueService {
                                 ArrangementRevenueDto::getTotalRevenue
                         ).reversed()
                 )
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private void validateForCreate(
