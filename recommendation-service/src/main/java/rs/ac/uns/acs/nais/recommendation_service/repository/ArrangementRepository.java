@@ -4,6 +4,7 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import rs.ac.uns.acs.nais.recommendation_service.dto.ArrangementBasicInfo;
 import rs.ac.uns.acs.nais.recommendation_service.dto.ArrangementRecommendationDto;
 import rs.ac.uns.acs.nais.recommendation_service.model.Arrangement;
 
@@ -83,4 +84,17 @@ public interface ArrangementRepository extends Neo4jRepository<Arrangement, Long
         LIMIT 3
     """)
     List<ArrangementRecommendationDto> findSimilarArrangements(@Param("arrangementId") Long arrangementId);
+
+
+    @Query("""
+    MATCH (a:Arrangement {id: $arrangementId})
+    RETURN a.name
+""")
+    String findArrangementNameById(@Param("arrangementId") Long arrangementId);
+
+    @Query("""
+    MATCH (a:Arrangement {id: $arrangementId})-[:LOCATED_IN]->(d:Destination)
+    RETURN d.name
+""")
+    String findDestinationNameByArrangementId(@Param("arrangementId") Long arrangementId);
 }

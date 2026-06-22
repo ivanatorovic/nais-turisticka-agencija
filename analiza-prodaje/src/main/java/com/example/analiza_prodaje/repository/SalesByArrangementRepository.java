@@ -32,4 +32,11 @@ public interface SalesByArrangementRepository
             WHERE arrangement_id = ?0
             """)
     BigDecimal sumRevenueByArrangement(Long arrangementId);
+
+    @Query("""
+        SELECT * FROM sales_by_arrangement
+        WHERE reservation_id = ?0
+        ALLOW FILTERING
+        """)
+    List<SalesByArrangement> findByReservationId(Long reservationId);
 }

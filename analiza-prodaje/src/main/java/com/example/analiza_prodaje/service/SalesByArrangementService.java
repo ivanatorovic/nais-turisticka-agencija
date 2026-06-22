@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-
+import com.example.analiza_prodaje.messaging.event.BookingCreatedEvent;
+import java.time.LocalDateTime;
 @Service
 public class SalesByArrangementService {
 
@@ -84,5 +85,33 @@ public class SalesByArrangementService {
     public BigDecimal getTotalRevenue(Long arrangementId) {
         BigDecimal total = repository.sumRevenueByArrangement(arrangementId);
         return total != null ? total : BigDecimal.ZERO;
+    }
+
+
+    @CacheEvict(value = "salesByArrangementRevenue", key = "#event.arrangementId")
+    public SalesByArrangement createFromBookingEvent(BookingCreatedEvent event) {
+
+        List<SalesByArrangement> existingReservations =
+                repository.findByReservationId(event.getReservationId());
+
+        if (existingReservations != null && !existingReservations.isEmpty()) {
+            throw new RuntimeException(
+                    "Reservation with id " + event.getReservationId() + " already exists."
+            );
+        }
+
+        SalesByArrangement sale = new SalesByArrangement();
+
+        sale.setArrangementId(event.getArrangementId());
+        sale.setReservationId(event.getReservationId());
+        sale.setArrangementName(event.getArrangementName());
+        sale.setDestination(event.getDestination());
+        sale.setReservationDate(LocalDateTime.now());
+        sale.setCustomerId(event.getUserId());
+        sale.setCustomerName(event.getCustomerName());
+        sale.setNumberOfPeople(event.getPersons());
+        sale.setTotalPrice(BigDecimal.valueOf(event.getTotalPrice()));
+
+        return repository.save(sale);
     }
 }

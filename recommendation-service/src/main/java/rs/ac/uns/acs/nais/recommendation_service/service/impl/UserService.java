@@ -3,10 +3,7 @@ package rs.ac.uns.acs.nais.recommendation_service.service.impl;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import rs.ac.uns.acs.nais.recommendation_service.dto.ArrangementRecommendationDto;
-import rs.ac.uns.acs.nais.recommendation_service.dto.BookedArrangementResponse;
-import rs.ac.uns.acs.nais.recommendation_service.dto.UserUpdateRequest;
-import rs.ac.uns.acs.nais.recommendation_service.dto.ViewedArrangementResponse;
+import rs.ac.uns.acs.nais.recommendation_service.dto.*;
 import rs.ac.uns.acs.nais.recommendation_service.model.User;
 import rs.ac.uns.acs.nais.recommendation_service.repository.ArrangementRepository;
 import rs.ac.uns.acs.nais.recommendation_service.repository.UserRepository;
@@ -14,17 +11,95 @@ import rs.ac.uns.acs.nais.recommendation_service.service.IUserService;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import rs.ac.uns.acs.nais.recommendation_service.config.RabbitMQConfig;
+import rs.ac.uns.acs.nais.recommendation_service.messaging.event.BookingCreatedEvent;
+
+import java.util.UUID;
 
 @Service
 public class UserService implements IUserService {
 
     private final UserRepository userRepository;
     private final ArrangementRepository arrangementRepository;
-
-    public UserService(UserRepository userRepository, ArrangementRepository arrangementRepository) {
+    private final RabbitTemplate rabbitTemplate;
+    public UserService(
+            UserRepository userRepository,
+            ArrangementRepository arrangementRepository,
+            RabbitTemplate rabbitTemplate
+    ) {
         this.userRepository = userRepository;
         this.arrangementRepository = arrangementRepository;
+        this.rabbitTemplate = rabbitTemplate;
     }
+
+
+    public Integer getBookedCount(Long userId, Long arrangementId) {
+        return userRepository.getBookedCount(userId, arrangementId);
+    }
+    public String addOrUpdateBookedSaga(
+            Long reservationId,
+            Long userId,
+            Long arrangementId,
+            String customerName,
+            Integer persons,
+            Double totalPrice
+    ) {
+        String sagaId = UUID.randomUUID().toString();
+
+        if (!userRepository.existsById(userId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + userId);
+        }
+
+        String arrangementName =
+                arrangementRepository.findArrangementNameById(arrangementId);
+
+        if (arrangementName == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Arrangement not found with id: " + arrangementId
+            );
+        }
+
+        String destinationName =
+                arrangementRepository.findDestinationNameByArrangementId(arrangementId);
+
+        if (destinationName == null) {
+            destinationName = "Nepoznato";
+        }
+
+        userRepository.addOrUpdateBooked(userId, arrangementId, persons, totalPrice);
+
+
+
+        Integer countAfterIncrease = userRepository.getBookedCount(userId, arrangementId);
+        System.out.println("COUNT POSLE NEO4J UPISA = " + countAfterIncrease);
+
+        BookingCreatedEvent event = new BookingCreatedEvent(
+                sagaId,
+                reservationId,
+                userId,
+                arrangementId,
+                arrangementName,
+                destinationName,
+                customerName,
+                persons,
+                totalPrice
+        );
+
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE,
+                RabbitMQConfig.BOOKING_CREATED_KEY,
+                event
+        );
+
+        return sagaId;
+    }
+
+    public void compensateBookedRelationship(Long userId, Long arrangementId) {
+        userRepository.compensateBookedRelationship(userId, arrangementId);
+    }
+
 
     @Override
     public User save(User user) {

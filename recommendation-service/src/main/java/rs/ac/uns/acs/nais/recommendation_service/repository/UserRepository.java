@@ -71,6 +71,8 @@ public interface UserRepository extends Neo4jRepository<User, Long> {
 """)
     List<ViewedArrangementResponse> findUserWithViewedRelationships(@Param("userId") Long userId);
 
+
+
     @Query("""
             MATCH (u:User {id: $userId})-[r:BOOKED]->(a:Arrangement)
             RETURN a.id AS arrangementId,
@@ -135,4 +137,25 @@ public interface UserRepository extends Neo4jRepository<User, Long> {
             LIMIT 5
         """)
     List<ArrangementRecommendationDto> recommendBasedOnBooked(@Param("userId") Long userId);
+
+    @Query("""
+    MATCH (u:User {id: $userId})-[r:BOOKED]->(a:Arrangement {id: $arrangementId})
+    RETURN r.count
+""")
+    Integer getBookedCount(@Param("userId") Long userId,
+                           @Param("arrangementId") Long arrangementId);
+
+
+    @Query("""
+    MATCH (u:User {id: $userId})-[r:BOOKED]->(a:Arrangement {id: $arrangementId})
+    WITH r
+    FOREACH (_ IN CASE WHEN coalesce(r.count, 1) > 1 THEN [1] ELSE [] END |
+        SET r.count = r.count - 1
+    )
+    FOREACH (_ IN CASE WHEN coalesce(r.count, 1) <= 1 THEN [1] ELSE [] END |
+        DELETE r
+    )
+""")
+    void compensateBookedRelationship(@Param("userId") Long userId,
+                                      @Param("arrangementId") Long arrangementId);
 }

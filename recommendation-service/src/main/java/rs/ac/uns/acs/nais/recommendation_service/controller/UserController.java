@@ -123,4 +123,18 @@ public class UserController {
         return ResponseEntity.ok(userService.recommendBasedOnBooked(userId));
     }
 
+
+    @PostMapping("/booked/saga")
+    public ResponseEntity<String> addOrUpdateBookedSaga(@RequestBody BookingSagaRequestDTO dto) {
+        String sagaId = userService.addOrUpdateBookedSaga(
+                dto.getReservationId(),
+                dto.getUserId(),
+                dto.getArrangementId(),
+                dto.getCustomerName(),
+                dto.getPersons(),
+                dto.getTotalPrice()
+        );
+
+        return ResponseEntity.ok(sagaId);
+    }
 }
