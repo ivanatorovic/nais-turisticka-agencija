@@ -148,14 +148,14 @@ public interface UserRepository extends Neo4jRepository<User, Long> {
 
     @Query("""
     MATCH (u:User {id: $userId})-[r:BOOKED]->(a:Arrangement {id: $arrangementId})
-    WITH r
-    FOREACH (_ IN CASE WHEN coalesce(r.count, 1) > 1 THEN [1] ELSE [] END |
-        SET r.count = r.count - 1
+    WITH r, coalesce(r.count, 1) AS currentCount
+    FOREACH (_ IN CASE WHEN currentCount > 1 THEN [1] ELSE [] END |
+        SET r.count = currentCount - 1
     )
-    FOREACH (_ IN CASE WHEN coalesce(r.count, 1) <= 1 THEN [1] ELSE [] END |
+    FOREACH (_ IN CASE WHEN currentCount = 1 THEN [1] ELSE [] END |
         DELETE r
     )
-""")
+    """)
     void compensateBookedRelationship(@Param("userId") Long userId,
                                       @Param("arrangementId") Long arrangementId);
 }
